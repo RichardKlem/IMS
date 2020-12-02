@@ -10,9 +10,11 @@
 
 using namespace std;
 class Matrix {
+private:
     vector<vector<Cell> >m;
 public:
-    Matrix(unsigned int x, unsigned int y) {
+    unsigned int size;
+    Matrix(unsigned int x, unsigned int y): size{x * y} {
         m.resize(x, vector<Cell>(y, Cell()));
     }
     class MatrixRow {
