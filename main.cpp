@@ -1,8 +1,11 @@
 #include <iostream>
+
 #include "CellularAutomaton.h"
 
 int main() {
-    CellularAutomaton CA(100, 100);
+    CellularAutomaton CA(12, 12);
+
+    CA.initInfection(10);
 
     CA.getMatrix()[10][10].setState(1);
 
