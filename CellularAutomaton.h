@@ -37,6 +37,18 @@ public:
 
     CellularAutomaton(unsigned int x, unsigned int y): matrix{Matrix(x, y)}{;
     };
+
+    void dumpMatrixToFile() {
+        ofstream file;
+        file.open("matrix_dump.txt");
+        for (int i = 0; i < matrix.dim.second; ++i) {
+            for (int j = 0; j < matrix.dim.first; ++j) {
+                file << matrix[j][i].getState();
+            }
+            file << endl;
+        }
+        file.close();
+    }
 };
 
 
