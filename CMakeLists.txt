@@ -3,4 +3,4 @@ project(IMS)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(IMS main.cpp main.h CellularAutomaton.cpp CellularAutomaton.h Matrix.h Cell.h)
+add_executable(ebola main.cpp main.h my_string.cpp my_string.h CellularAutomaton.cpp CellularAutomaton.h Matrix.h Cell.h)
