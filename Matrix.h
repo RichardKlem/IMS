@@ -14,7 +14,8 @@ private:
     vector<vector<Cell> >m;
 public:
     unsigned int size;
-    Matrix(unsigned int x, unsigned int y): size{x * y} {
+    pair<unsigned int, unsigned int> dim;
+    Matrix(unsigned int x, unsigned int y): size{x * y}, dim{x, y}{
         m.resize(x, vector<Cell>(y, Cell()));
     }
     class MatrixRow {
