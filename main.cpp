@@ -51,7 +51,9 @@ int main(int argc, char *argv[]) {
     CellularAutomaton CA(1420, 3550);
     CA.getMatrix()[10][10].setState(1);
     cout << CA.getMatrix().size / initInfectionRate << endl;
+
+    CA.dumpMatrixToFile();
+
+    std::cout << "Hello, World! " << std::endl << CA.getMatrix()[10][10].getState() << std::endl << CA.getMatrix()[10][11].getState();
     return 0;
 }
-
-
