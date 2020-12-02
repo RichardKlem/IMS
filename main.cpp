@@ -1,13 +1,11 @@
 #include <iostream>
-#include "CelluarAtomaton.h"
-#include "Matrix.h"
+#include "CellularAutomaton.h"
 
 int main() {
-    // Example usage
-    Matrix mm(100,100);
+    CellularAutomaton CA(100, 100);
 
-    mm[10][10].setState(1);
+    CA.getMatrix()[10][10].setState(1);
 
-    std::cout << "Hello, World! " << std::endl << mm[10][10].getState() << mm[10][9].getState();
+    std::cout << "Hello, World! " << std::endl << CA.getMatrix()[10][10].getState() << std::endl << CA.getMatrix()[10][11].getState();
     return 0;
 }
