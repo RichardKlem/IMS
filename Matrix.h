@@ -6,25 +6,24 @@
 #define IMS_MATRIX_H
 
 #include <vector>
-#include "Cell.h"
 
 using namespace std;
-class Matrix {
+template  <class T> class Matrix {
 private:
-    vector<vector<Cell> >m;
+    vector<vector<T> >m;
 public:
     unsigned int size;
     pair<unsigned int, unsigned int> dim;
     Matrix(unsigned int x, unsigned int y): size{x * y}, dim{x, y}{
-        m.resize(x, vector<Cell>(y, Cell()));
+        m.resize(x, vector<T>(y, T(this)));
     }
     class MatrixRow {
     private:
-        vector<Cell>& row;
+        vector<T>& row;
     public:
-        explicit MatrixRow(vector<Cell>& r) : row(r) {
+        explicit MatrixRow(vector<T>& r) : row(r) {
         }
-        Cell& operator[](unsigned int y) {
+        T& operator[](unsigned int y) {
             return row.at(y);
         }
     };
