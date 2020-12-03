@@ -4,14 +4,8 @@
 
 #ifndef IMS_MAIN_H
 #define IMS_MAIN_H
-
-#define YELLOW "\033[0;93m"
-#define RED "\033[0;91m"
-#define RST "\033[0m"
-
-
-FILE * outFile = stdout;
-FILE * errFile = stdout;
+#ifdef __linux__
+#include <getopt.h>
 // Definice dlouhých přepínačů.
 static struct option long_options[] =
         {
@@ -21,6 +15,60 @@ static struct option long_options[] =
         };
 // Definice krátkých přepínačů.
 char *short_options = (char*)"hn:";
+
+/**
+ * @brief Funkce zpracuje argumenty a nastaví podle nich proměnné.
+ * @param argc počet argumentů
+ * @param argv ukazatel na pole argumentů
+ * @param initInfectionRate ukazatel na proměnnou
+ */
+void argParse(int argc, char **argv, unsigned int * initInfectionRate) {
+    int c, option_index;
+    while ((c = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1)
+    {
+        str2int_struct_t tmp = str2int(optarg);
+        str2int_struct_t *p_tmp = &tmp;
+        switch (c)
+        {
+            case 'h':
+                fprintf(outFile,"%s", help_text);
+                exit (OK);
+            case 'n':
+                if (p_tmp->status) {
+                    if (p_tmp->num < 0) {
+                        cout << p_tmp->num << endl;
+                        fprintf(errFile, "\n%s   Nesprávná hodnota čísla. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                        exit(BAD_ARG_VALUE);
+                    }
+                    *initInfectionRate = p_tmp->num;
+                }
+                else {
+                    cout << p_tmp->num << endl;
+                    fprintf(errFile, "\n%s   Nesprávná hodnota čísla. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                    exit(BAD_ARG_VALUE);
+                }
+                break;
+            default:
+                exit(UNKNOWN_PARAMETER);
+        }
+    }
+}
+
+#elif _WIN32
+void argParse(int argc, char **argv, unsigned int * initInfectionRate) {
+    *initInfectionRate = 1000000;
+}
+#endif
+
+
+#define YELLOW "\033[0;93m"
+#define RED "\033[0;91m"
+#define RST "\033[0m"
+
+
+FILE * outFile = stdout;
+FILE * errFile = stdout;
+
 
 enum EXIT_CODES {
     OK = 0,
