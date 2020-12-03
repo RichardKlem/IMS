@@ -59,25 +59,24 @@ public:
         this->state = newState;
     }
     void initNeighbours(){
-
-        if (x - 1 >= 0) {
-            if (y - 1 >= 0)
+        if (x >= 1) {
+            if (y >= 1)
                 neighbours[0] = &(*parentMatrix)[x - 1][y - 1];
             neighbours[1] = &(*parentMatrix)[x - 1][y];
-            if (y + 1 < parentMatrix->dim.second)
+            if (y < parentMatrix->dim.second - 1)
                 neighbours[2] = &(*parentMatrix)[x - 1][y + 1];
         }
 
-        if (y - 1 >= 0)
+        if (y >= 1)
             neighbours[3] = &(*parentMatrix)[x][y-1];
-        if (y + 1 < parentMatrix->dim.second)
+        if (y < parentMatrix->dim.second - 1)
             neighbours[4] = &(*parentMatrix)[x][y+1];
 
-        if (x + 1 < parentMatrix->dim.first) {
-            if (y - 1 >= 0)
+        if (x < parentMatrix->dim.first - 1) {
+            if (y >= 1)
                 neighbours[5] = &(*parentMatrix)[x + 1][y - 1];
             neighbours[6] = &(*parentMatrix)[x + 1][y];
-            if (y + 1 < parentMatrix->dim.second)
+            if (y < parentMatrix->dim.second - 1)
                 neighbours[7] = &(*parentMatrix)[x + 1][y + 1];
         }
     }
