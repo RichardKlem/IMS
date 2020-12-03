@@ -53,8 +53,9 @@ public:
     void initPosition() {
         for (int i = 0; i < matrix.dim.second; ++i) {
             for (int j = 0; j < matrix.dim.first; ++j) {
-                matrix[j][i].setX(i);
-                matrix[j][i].setY(j);
+                matrix[j][i].setX(j);
+                matrix[j][i].setY(i);
+                matrix[j][i].initNeighbours();
             }
         }
     }

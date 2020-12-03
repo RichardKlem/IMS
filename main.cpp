@@ -13,12 +13,12 @@ int main(int argc, char *argv[]) {
     if (argc > 1)
         argParse(argc, argv, &initInfectionRate);
 
-    CellularAutomaton CA(1420, 3550);
-    CA.getMatrix()[10][10].setState(1);
-    cout << CA.getMatrix().size / initInfectionRate << endl;
+    CellularAutomaton CA(3, 3);
+    CA.getMatrix()[2][2].setState(1);
+    //cout << CA.getMatrix().size / initInfectionRate << endl;
     CA.initPosition();
-    CA.dumpMatrixToFile();
+    //CA.dumpMatrixToFile();
 
-    std::cout << "Hello, World! " << std::endl << CA.getMatrix()[10][10].getState() << std::endl << CA.getMatrix()[10][11].getState();
+    //std::cout << "Hello, World! " << std::endl << CA.getMatrix()[2][2].getState() << std::endl << CA.getMatrix()[2][2].getState();
     return 0;
 }
