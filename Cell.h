@@ -80,6 +80,14 @@ public:
                 neighbours[7] = &(*parentMatrix)[x + 1][y + 1];
         }
     }
+
+    void newState(unsigned int ** newStates) {
+        for (auto & neighbour : neighbours) {
+            if (neighbour != nullptr && neighbour->getState() > 0 && this->getState() < 1){
+                newStates[x][y] = 1;
+            }
+        }
+    }
 };
 
 #endif //IMS_CELL_H
