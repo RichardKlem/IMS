@@ -82,8 +82,15 @@ public:
     }
 
     void newState(unsigned int ** newStates) {
+        if (immune)
+            return;
         for (auto & neighbour : neighbours) {
-            if (neighbour != nullptr && neighbour->getState() > 0 && this->getState() < 1){
+            if (getState() > 0) {
+                newStates[x][y] = (getState() + 1) % 3;
+                if ((getState() + 1) % 3 == 0)
+                    immune = true;
+            }
+            else if (neighbour != nullptr && (neighbour->getState() == 1 || neighbour->getState() == 2) && getState() < 1){
                 newStates[x][y] = 1;
             }
         }
