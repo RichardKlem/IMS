@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
+#include <cmath>
 #include "Matrix.h"
 #include "Cell.h"
 
@@ -29,7 +30,7 @@ public:
 
     void initInfection(unsigned int infectionRatio, unsigned int ** newStates) {
         srand((int) time(nullptr)); // Set random seed
-        unsigned int infectedCount = round((double)matrix.size / infectionRatio);
+        unsigned int infectedCount = round((double) matrix.size / infectionRatio);
         if (infectedCount == 0)
             infectedCount = 1;
         printf("Infecting randomly: %d cells\n", infectedCount);
@@ -45,9 +46,8 @@ public:
     };
 
     void dumpMatrixToFile(unsigned int time) {
-        ofstream file;
         string fileName = "matrix_dump" + to_string(time) + ".txt";
-        file.open(fileName);
+        ofstream file(fileName);
         for (int i = 0; i < matrix.dim.first; ++i) {
             for (int j = 0; j < matrix.dim.second; ++j) {
                 file << matrix[i][j].getState();
@@ -83,9 +83,11 @@ public:
         }
 
         for (int t = 0; t < time; ++t) {
+            bool infectionIsPresent = false;
             for (int i = 0; i < matrix.dim.first; ++i) {
                 for (int j = 0; j < matrix.dim.second; ++j) {
                     matrix[i][j].newState(newStates);
+                    infectionIsPresent |= (bool) newStates[i][j];
                 }
             }
             for (int i = 0; i < matrix.dim.first; ++i) {
@@ -93,8 +95,15 @@ public:
                     matrix[i][j].setState(newStates[i][j]);
                 }
             }
-            if (t % 2 == 0)
+            if (t % 2 == 0) {
                 dumpMatrixToFile(t+1);
+            }
+            else if ((t % 2 != 0) && (!infectionIsPresent)){
+                dumpMatrixToFile(t+1);
+                return;
+            }
+            if (!infectionIsPresent)
+                return;
         }
     }
 };
