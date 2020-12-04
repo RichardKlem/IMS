@@ -24,6 +24,9 @@ str2int_struct_t str2int (char * str){
     }
 
     long int tmp = strtol(str, nullptr, 0);
+    if (tmp < 0)
+        return result;
+
     num = (unsigned int) tmp;
 
     result = {S2I_OK, num};

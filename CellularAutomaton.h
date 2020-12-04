@@ -54,7 +54,7 @@ public:
         if (infectedCount == 0)
             infectedCount = 1;
         printf("Infecting randomly: %d persons\n", infectedCount);
-        for (int i = 0; i < infectedCount; ++i) {
+        for (unsigned int i = 0; i < infectedCount; ++i) {
             auto index = rand() % persons.size();  // Případ, kdy rand() vygeneruje stejné číslo se neřeší
             persons.at(index).setState(INFECTED);
         }
@@ -77,8 +77,8 @@ public:
     void dumpMatrixToFile(unsigned int time) {
         string fileName = "matrix_dump" + to_string(time) + ".txt";
         ofstream file(fileName);
-        for (int i = 0; i < getX(); ++i) {
-            for (int j = 0; j < getY(); ++j) {
+        for (unsigned int i = 0; i < getX(); ++i) {
+            for (unsigned int j = 0; j < getY(); ++j) {
                 auto person = matrix[i][j].getPerson();
                 if (person != nullptr){
                     file << person->getState();
@@ -98,8 +98,8 @@ public:
             auto newPersonY = rand() % getY();
             if (matrix[newPersonX][newPersonY].getState() != FREE) {
                 bool found = false;
-                for (int i = 0; i < matrix.dim.first; ++i) {
-                    for (int j = 0; j < matrix.dim.second; ++j) {
+                for (unsigned int i = 0; i < getX(); ++i) {
+                    for (unsigned int j = 0; j < getY(); ++j) {
                         if (matrix[i][j].getState() == FREE) {
                             matrix[i][j].setState(OCCUPIED);
                             matrix[i][j].setPerson(&person);
@@ -126,8 +126,8 @@ public:
      * Inicalizuje atributy bunek
      */
     void initCellPositions() {
-        for (int i = 0; i < matrix.dim.first; ++i) {
-            for (int j = 0; j < matrix.dim.second; ++j) {
+        for (unsigned int i = 0; i < getX(); ++i) {
+            for (unsigned int j = 0; j < getY(); ++j) {
                 matrix[i][j].setX(i);
                 matrix[i][j].setY(j);
                 matrix[i][j].initNeighbours();
@@ -138,7 +138,7 @@ public:
     bool nextState(Matrix<Cell> * oldMatrix, Matrix<Cell> * newMatrix) {
         bool allInfected = true;
         for (auto & person: persons) {
-            for (int i = 0; i < NUM_OF_NEIGHBOURS; ++i) {
+            for (unsigned int i = 0; i < NUM_OF_NEIGHBOURS; ++i) {
                 auto neighbour = (*oldMatrix)[person.getX()][person.getY()].getNeighbours()[i];
                 if (neighbour != nullptr && neighbour->getPerson() != nullptr && neighbour->getPerson()->getState() == INFECTED)
                     person.setState(INFECTED);
@@ -156,7 +156,7 @@ public:
         initInfection(infectionRatio);
         dumpMatrixToFile(0);
         // Cyklí se přes modelový čas!
-        for (int t = 0; t < time; ++t) {
+        for (unsigned int t = 0; t < time; ++t) {
             static bool allInfected = false;
             auto newMatrix = Matrix<Cell>(getX(), getY());
             initWalls(&newMatrix);

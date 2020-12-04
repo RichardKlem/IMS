@@ -72,77 +72,46 @@ void argParse(int argc, char **argv, unsigned int * initInfectionRate, unsigned 
                 exit (OK);
             case 'r':
                 if (p_tmp->status) {
-                    if (p_tmp->num < 0) {
-                        cout << p_tmp->num << endl;
-                        fprintf(errFile, "\n%s   Nesprávná hodnota prvotního nakažení. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
-                        exit(BAD_ARG_VALUE);
-                    }
                     *initInfectionRate = p_tmp->num;
                 }
                 else {
-                    cout << p_tmp->num << endl;
-                    fprintf(errFile, "\n%s   Nesprávná hodnota prvotního nakažení. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                    cerr << endl << RED <<"   Nesprávná hodnota poměru prvotního nakažení. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
                     exit(BAD_ARG_VALUE);
                 }
                 break;
             case 'x':
                 if (p_tmp->status) {
-                    if (p_tmp->num < 0) {
-                        cout << p_tmp->num << endl;
-                        fprintf(errFile, "\n%s   Nesprávná hodnota počtu řádků. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
-                        exit(BAD_ARG_VALUE);
-                    }
                     *x = p_tmp->num;
                 }
                 else {
-                    cout << p_tmp->num << endl;
-                    fprintf(errFile, "\n%s   Nesprávná hodnota počtu řádků. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                    cerr << endl << RED <<"   Nesprávná hodnota počtu řádků. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
                     exit(BAD_ARG_VALUE);
                 }
                 break;
             case 'y':
                 if (p_tmp->status) {
-                    if (p_tmp->num < 0) {
-                        cout << p_tmp->num << endl;
-                        fprintf(errFile, "\n%s   Nesprávná hodnota počtu sloupců. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
-                        exit(BAD_ARG_VALUE);
-                    }
                     *y = p_tmp->num;
                 }
                 else {
-                    cout << p_tmp->num << endl;
-                    fprintf(errFile, "\n%s   Nesprávná hodnota počtu sloupců. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                    cerr << endl << RED <<"   Nesprávná hodnota počtu sloupců. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
                     exit(BAD_ARG_VALUE);
                 }
                 break;
             case 't':
                 if (p_tmp->status) {
-                    if (p_tmp->num < 0) {
-                        cout << p_tmp->num << endl;
-                        //fprintf(errFile, "\n%s   Nesprávná hodnota času. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
-                        cerr << endl << RED <<"   Nesprávná hodnota času. Hodnota musí být ostře větší než 0.\n\n" << RST<< endl;
-                        exit(BAD_ARG_VALUE);
-                    }
                     *time = p_tmp->num;
                 }
                 else {
-                    cerr << endl << RED <<"   Nesprávná hodnota času. Hodnota musí být ostře větší než 0.\n\n" << RST<< endl;
-                    //fprintf(errFile, "\n%s   Nesprávná hodnota času. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                    cerr << endl << RED <<"   Nesprávná hodnota času. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
                     exit(BAD_ARG_VALUE);
                 }
                 break;
             case 's':
                 if (p_tmp->status) {
-                    if (p_tmp->num < 0) {
-                        cout << p_tmp->num << endl;
-                        fprintf(errFile, "\n%s   Nesprávná hodnota krokování času. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
-                        exit(BAD_ARG_VALUE);
-                    }
                     *step = p_tmp->num;
                 }
                 else {
-                    cout << p_tmp->num << endl;
-                    fprintf(errFile, "\n%s   Nesprávná hodnota krokování času. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                    cerr << endl << RED <<"   Nesprávná hodnota krokování času. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
                     exit(BAD_ARG_VALUE);
                 }
                 break;
