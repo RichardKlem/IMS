@@ -8,13 +8,16 @@
 
 
 int main(int argc, char *argv[]) {
-    unsigned int initInfectionRate = 1000, x = 40, y = 60, time = 50, step = 1;
+    unsigned int initInfectionRate = 5, x = 6, y = 8, time = 5, step = 1;
 
     if (argc > 1)
         argParse(argc, argv, &initInfectionRate, &x, &y, &time, &step);
 
-    CellularAutomaton CA(x, y);
-    CA.initPosition();
-    CA.simulate(time, initInfectionRate);
+    const vector<pair<unsigned int, unsigned int>> walls {{0,3},{1,3}, {2,3}, {3,3}, {4,3}};
+    CellularAutomaton CA(x, y, 10, &walls);
+    CA.initWalls(&CA.getMatrix());
+    CA.initCellPositions();
+    CA.initPersonPositions();
+    CA.simulate(time, initInfectionRate, step);
     return 0;
 }

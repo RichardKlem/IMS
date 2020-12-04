@@ -13,11 +13,16 @@
 #include <cmath>
 #include "Matrix.h"
 #include "Cell.h"
+#include "Person.h"
 
 
 class CellularAutomaton {
 private:
     Matrix<Cell> matrix;
+    vector<Person> persons;
+    unsigned int x = 0;
+    unsigned int y = 0;
+    vector<pair<unsigned int, unsigned int>> walls;
 
 public:
     Matrix<Cell> &getMatrix() {
@@ -27,39 +32,100 @@ public:
     void setMatrix(Matrix<Cell> &m) {
         CellularAutomaton::matrix = m;
     }
+    unsigned int getX() {
+        return x;
+    }
 
-    void initInfection(unsigned int infectionRatio, unsigned int ** newStates) {
+    void setX(unsigned int newX) {
+        CellularAutomaton::x = newX;
+    }
+
+    unsigned int getY() {
+        return y;
+    }
+
+    void setY(unsigned int newY) {
+        CellularAutomaton::y = newY;
+    }
+
+    void initInfection(unsigned int infectionRatio) {
         srand((int) time(nullptr)); // Set random seed
-        unsigned int infectedCount = round((double) matrix.size / infectionRatio);
+        unsigned int infectedCount = round((double) persons.size() / infectionRatio);
         if (infectedCount == 0)
             infectedCount = 1;
-        printf("Infecting randomly: %d cells\n", infectedCount);
+        printf("Infecting randomly: %d persons\n", infectedCount);
         for (int i = 0; i < infectedCount; ++i) {
-            auto row = (unsigned int) (rand() % matrix.dim.first);
-            auto column = (unsigned int) (rand() % matrix.dim.second);
-            CellularAutomaton::matrix[row][column].setState(1);
-            newStates[row][column] = 1;
+            auto index = rand() % persons.size();  // Případ, kdy rand() vygeneruje stejné číslo se neřeší
+            persons.at(index).setState(INFECTED);
         }
     }
 
-    CellularAutomaton(unsigned int x, unsigned int y): matrix{Matrix<Cell>(x, y)}{;
-    };
+    void initWalls(Matrix<Cell> * cellMatrix) {
+        for (const auto & wall : walls) {
+            (*cellMatrix)[wall.first][wall.second].setState(WALL);
+        }
+    }
+
+    CellularAutomaton(unsigned int x, unsigned int y, unsigned int numOfPersons, const vector<pair<unsigned int, unsigned int>> * walls):
+        matrix{Matrix<Cell>(x, y)},
+        persons{vector<Person>(numOfPersons, Person())},
+        x{x},
+        y{y},
+        walls{*walls}
+        {;    };
 
     void dumpMatrixToFile(unsigned int time) {
         string fileName = "matrix_dump" + to_string(time) + ".txt";
         ofstream file(fileName);
-        for (int i = 0; i < matrix.dim.first; ++i) {
-            for (int j = 0; j < matrix.dim.second; ++j) {
-                file << matrix[i][j].getState();
+        for (int i = 0; i < getX(); ++i) {
+            for (int j = 0; j < getY(); ++j) {
+                auto person = matrix[i][j].getPerson();
+                if (person != nullptr){
+                    file << person->getState();
+                }
+                else
+                    file << matrix[i][j].getState();
             }
             file << endl;
         }
         file.close();
     }
+
+    void initPersonPositions() {
+        srand((int) time(nullptr)); // Set random seed
+        for (auto & person: persons) {
+            auto newPersonX = rand() % getX();
+            auto newPersonY = rand() % getY();
+            if (matrix[newPersonX][newPersonY].getState() != FREE) {
+                bool found = false;
+                for (int i = 0; i < matrix.dim.first; ++i) {
+                    for (int j = 0; j < matrix.dim.second; ++j) {
+                        if (matrix[i][j].getState() == FREE) {
+                            matrix[i][j].setState(OCCUPIED);
+                            matrix[i][j].setPerson(&person);
+                            person.setX(i);
+                            person.setY(j);
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found)
+                        break;
+                }
+            }
+            else {
+                matrix[newPersonX][newPersonY].setState(OCCUPIED);
+                matrix[newPersonX][newPersonY].setPerson(&person);
+                person.setX(newPersonX);
+                person.setY(newPersonY);
+            }
+        }
+    }
+
     /**
-     * Inicalizuje atributy bun
+     * Inicalizuje atributy bunek
      */
-    void initPosition() {
+    void initCellPositions() {
         for (int i = 0; i < matrix.dim.first; ++i) {
             for (int j = 0; j < matrix.dim.second; ++j) {
                 matrix[i][j].setX(i);
@@ -69,40 +135,43 @@ public:
         }
     }
 
-    void simulate(const unsigned int time, unsigned int infectionRatio) {
-        static bool run = false;
-        static unsigned int **newStates;
-        if (!run){
-            newStates = new unsigned int *[matrix.dim.first];
-            for(int i = 0; i < matrix.dim.first; ++i){
-                    newStates[i] = new unsigned int[matrix.dim.second]{0};
+    bool nextState(Matrix<Cell> * oldMatrix, Matrix<Cell> * newMatrix) {
+        bool allInfected = true;
+        for (auto & person: persons) {
+            for (int i = 0; i < NUM_OF_NEIGHBOURS; ++i) {
+                auto neighbour = (*oldMatrix)[person.getX()][person.getY()].getNeighbours()[i];
+                if (neighbour != nullptr && neighbour->getPerson() != nullptr && neighbour->getPerson()->getState() == INFECTED)
+                    person.setState(INFECTED);
             }
-            initInfection(infectionRatio, newStates);
-            run = true;
-            dumpMatrixToFile(0);
-        }
+            (*newMatrix)[person.getX()][person.getY()].setPerson(&person);
+            (*newMatrix)[person.getX()][person.getY()].setState(OCCUPIED);
 
+            if (person.getState() == HEALTHY)
+                allInfected = false;
+        }
+        return allInfected;
+    }
+
+    void simulate(const unsigned int time, unsigned int infectionRatio, unsigned int step) {
+        initInfection(infectionRatio);
+        dumpMatrixToFile(0);
+        // Cyklí se přes modelový čas!
         for (int t = 0; t < time; ++t) {
-            bool infectionIsPresent = false;
-            for (int i = 0; i < matrix.dim.first; ++i) {
-                for (int j = 0; j < matrix.dim.second; ++j) {
-                    matrix[i][j].newState(newStates);
-                    infectionIsPresent |= (bool) newStates[i][j];
-                }
-            }
-            for (int i = 0; i < matrix.dim.first; ++i) {
-                for (int j = 0; j < matrix.dim.second; ++j) {
-                    matrix[i][j].setState(newStates[i][j]);
-                }
-            }
-            if (t % 2 == 0) {
+            static bool allInfected = false;
+            auto newMatrix = Matrix<Cell>(getX(), getY());
+            initWalls(&newMatrix);
+            allInfected |= nextState(&getMatrix(), &newMatrix);
+
+            matrix = newMatrix;
+
+            if (t % step == 0) {
                 dumpMatrixToFile(t+1);
             }
-            else if ((t % 2 != 0) && (!infectionIsPresent)){
+            else if ((t % step != 0) && (allInfected)){
                 dumpMatrixToFile(t+1);
                 return;
             }
-            if (!infectionIsPresent)
+            if (allInfected)
                 return;
         }
     }
