@@ -6,18 +6,36 @@
 #define IMS_CELL_H
 
 #include "Matrix.h"
+#include "Person.h"
 #define NUM_OF_NEIGHBOURS 8
 
+enum cellState {
+    WALL,
+    FREE,
+    OCCUPIED
+};
 class Cell {
 private:
-    unsigned int state = 0;
-    unsigned int numOfInfections = 0;
-    bool immune = false;
+    cellState state = FREE;
     Cell * neighbours [8] {nullptr};
+    Person * person{nullptr};
     unsigned int x = 0, y = 0;
     Matrix<Cell> * parentMatrix;
 public:
-    unsigned int getX() const {
+    Cell *const *getNeighbours() {
+        return neighbours;
+    }
+
+
+    Person *getPerson() {
+        return person;
+    }
+
+    void setPerson(Person *newPerson) {
+        person = newPerson;
+    }
+
+    unsigned int getX() {
         return x;
     }
 
@@ -33,29 +51,12 @@ public:
         Cell::y = newY;
     }
 
-public:
     Cell(Matrix<Cell> * matrix) : parentMatrix{matrix}{;}
 
-    unsigned int getNumOfInfections() {
-        return numOfInfections;
-    }
-
-    void setNumOfInfections(unsigned int numOfInfections) {
-        Cell::numOfInfections = numOfInfections;
-    }
-
-    bool isImmune() {
-        return immune;
-    }
-
-    void setImmune(bool immune) {
-        Cell::immune = immune;
-    }
-
-    unsigned int getState() {
+    cellState getState() {
         return this->state;
     }
-    void setState(unsigned int newState) {
+    void setState(cellState newState) {
         this->state = newState;
     }
     void initNeighbours(){
@@ -79,20 +80,9 @@ public:
             if (y < parentMatrix->dim.second - 1)
                 neighbours[7] = &(*parentMatrix)[x + 1][y + 1];
         }
-    }
-
-    void newState(unsigned int ** newStates) {
-        if (immune)
-            return;
-        for (auto & neighbour : neighbours) {
-            if (getState() > 0) {
-                newStates[x][y] = (getState() + 1) % 3;
-                if ((getState() + 1) % 3 == 0)
-                    immune = true;
-            }
-            else if (neighbour != nullptr && (neighbour->getState() == 1 || neighbour->getState() == 2) && getState() < 1){
-                newStates[x][y] = 1;
-            }
+        for (auto & neighbour: neighbours) {
+            if (neighbour != nullptr && neighbour->getState() == WALL)
+                neighbour = nullptr;
         }
     }
 };
