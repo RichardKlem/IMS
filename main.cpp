@@ -8,15 +8,15 @@
 
 
 int main(int argc, char *argv[]) {
-    unsigned int initInfectionRate = 0;
+    unsigned int initInfectionRate = 1000, x = 40, y = 60, time = 50;
 
     if (argc > 1)
-        argParse(argc, argv, &initInfectionRate);
+        argParse(argc, argv, &initInfectionRate, &x, &y, &time);
 
-    CellularAutomaton CA(50, 50);
+    CellularAutomaton CA(x, y);
     //CA.getMatrix()[1][1].setState(1);
     CA.initPosition();
-    CA.simulate(5, initInfectionRate);
+    CA.simulate(time, initInfectionRate);
     //std::cout << "Hello, World! " << std::endl << CA.getMatrix()[2][2].getState() << std::endl << CA.getMatrix()[2][2].getState();
     return 0;
 }

@@ -43,11 +43,14 @@ const char * help_text = "\n***Nápověda k CA simuláru***\n"
 static struct option long_options[] =
         {
                 {"help",   no_argument,        nullptr, 'h'},
-                {"num",    optional_argument,  nullptr, 'n'},
+                {"ratio",    optional_argument,  nullptr, 'r'},
+                {"row",    optional_argument,  nullptr, 'x'},
+                {"col",    optional_argument,  nullptr, 'y'},
+                {"time",    optional_argument,  nullptr, 't'},
                 {nullptr, 0, nullptr, 0}
         };
 // Definice krátkých přepínačů.
-char *short_options = (char*)"hn:";
+char *short_options = (char*)"hr:x:y:t:";
 
 /**
  * @brief Funkce zpracuje argumenty a nastaví podle nich proměnné.
@@ -55,7 +58,7 @@ char *short_options = (char*)"hn:";
  * @param argv ukazatel na pole argumentů
  * @param initInfectionRate ukazatel na proměnnou
  */
-void argParse(int argc, char **argv, unsigned int * initInfectionRate) {
+void argParse(int argc, char **argv, unsigned int * initInfectionRate, unsigned int * x, unsigned int * y, unsigned int * t) {
     int c, option_index;
     while ((c = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1)
     {
@@ -66,18 +69,64 @@ void argParse(int argc, char **argv, unsigned int * initInfectionRate) {
             case 'h':
                 fprintf(outFile,"%s", help_text);
                 exit (OK);
-            case 'n':
+            case 'r':
                 if (p_tmp->status) {
                     if (p_tmp->num < 0) {
                         cout << p_tmp->num << endl;
-                        fprintf(errFile, "\n%s   Nesprávná hodnota čísla. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                        fprintf(errFile, "\n%s   Nesprávná hodnota prvotního nakažení. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
                         exit(BAD_ARG_VALUE);
                     }
                     *initInfectionRate = p_tmp->num;
                 }
                 else {
                     cout << p_tmp->num << endl;
-                    fprintf(errFile, "\n%s   Nesprávná hodnota čísla. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                    fprintf(errFile, "\n%s   Nesprávná hodnota prvotního nakažení. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                    exit(BAD_ARG_VALUE);
+                }
+                break;
+            case 'x':
+                if (p_tmp->status) {
+                    if (p_tmp->num < 0) {
+                        cout << p_tmp->num << endl;
+                        fprintf(errFile, "\n%s   Nesprávná hodnota počtu řádků. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                        exit(BAD_ARG_VALUE);
+                    }
+                    *x = p_tmp->num;
+                }
+                else {
+                    cout << p_tmp->num << endl;
+                    fprintf(errFile, "\n%s   Nesprávná hodnota počtu řádků. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                    exit(BAD_ARG_VALUE);
+                }
+                break;
+            case 'y':
+                if (p_tmp->status) {
+                    if (p_tmp->num < 0) {
+                        cout << p_tmp->num << endl;
+                        fprintf(errFile, "\n%s   Nesprávná hodnota počtu sloupců. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                        exit(BAD_ARG_VALUE);
+                    }
+                    *y = p_tmp->num;
+                }
+                else {
+                    cout << p_tmp->num << endl;
+                    fprintf(errFile, "\n%s   Nesprávná hodnota počtu sloupců. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                    exit(BAD_ARG_VALUE);
+                }
+                break;
+            case 't':
+                if (p_tmp->status) {
+                    if (p_tmp->num < 0) {
+                        cout << p_tmp->num << endl;
+                        //fprintf(errFile, "\n%s   Nesprávná hodnota času. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                        cerr << endl << RED <<"   Nesprávná hodnota času. Hodnota musí být ostře větší než 0.\n\n" << RST<< endl;
+                        exit(BAD_ARG_VALUE);
+                    }
+                    *y = p_tmp->num;
+                }
+                else {
+                    cerr << endl << RED <<"   Nesprávná hodnota času. Hodnota musí být ostře větší než 0.\n\n" << RST<< endl;
+                    //fprintf(errFile, "\n%s   Nesprávná hodnota času. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
                     exit(BAD_ARG_VALUE);
                 }
                 break;
@@ -88,10 +137,10 @@ void argParse(int argc, char **argv, unsigned int * initInfectionRate) {
 }
 
 #elif _WIN32
-void argParse(int argc, char **argv, unsigned int * initInfectionRate) {
-    *initInfectionRate = 1000000;
+void argParse(int argc, char * argv[], unsigned int * initInfectionRate, unsigned int * x, unsigned int * y, unsigned int * t) {
+    *initInfectionRate = 1000;
 }
 #endif
 
-void argParse(int argc, char * argv[], unsigned int * initInfectionRate);
+void argParse(int argc, char * argv[], unsigned int * initInfectionRate, unsigned int * x, unsigned int * y, unsigned int * t);
 #endif //IMS_MAIN_H
