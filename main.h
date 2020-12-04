@@ -47,10 +47,11 @@ static struct option long_options[] =
                 {"row",    optional_argument,  nullptr, 'x'},
                 {"col",    optional_argument,  nullptr, 'y'},
                 {"time",    optional_argument,  nullptr, 't'},
+                {"time-step",    optional_argument,  nullptr, 's'},
                 {nullptr, 0, nullptr, 0}
         };
 // Definice krátkých přepínačů.
-char *short_options = (char*)"hr:x:y:t:";
+char *short_options = (char*)"hr:x:y:t:s:";
 
 /**
  * @brief Funkce zpracuje argumenty a nastaví podle nich proměnné.
@@ -58,7 +59,7 @@ char *short_options = (char*)"hr:x:y:t:";
  * @param argv ukazatel na pole argumentů
  * @param initInfectionRate ukazatel na proměnnou
  */
-void argParse(int argc, char **argv, unsigned int * initInfectionRate, unsigned int * x, unsigned int * y, unsigned int * t) {
+void argParse(int argc, char **argv, unsigned int * initInfectionRate, unsigned int * x, unsigned int * y, unsigned int * time, unsigned int * step) {
     int c, option_index;
     while ((c = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1)
     {
@@ -122,11 +123,26 @@ void argParse(int argc, char **argv, unsigned int * initInfectionRate, unsigned 
                         cerr << endl << RED <<"   Nesprávná hodnota času. Hodnota musí být ostře větší než 0.\n\n" << RST<< endl;
                         exit(BAD_ARG_VALUE);
                     }
-                    *y = p_tmp->num;
+                    *time = p_tmp->num;
                 }
                 else {
                     cerr << endl << RED <<"   Nesprávná hodnota času. Hodnota musí být ostře větší než 0.\n\n" << RST<< endl;
                     //fprintf(errFile, "\n%s   Nesprávná hodnota času. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                    exit(BAD_ARG_VALUE);
+                }
+                break;
+            case 's':
+                if (p_tmp->status) {
+                    if (p_tmp->num < 0) {
+                        cout << p_tmp->num << endl;
+                        fprintf(errFile, "\n%s   Nesprávná hodnota krokování času. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
+                        exit(BAD_ARG_VALUE);
+                    }
+                    *step = p_tmp->num;
+                }
+                else {
+                    cout << p_tmp->num << endl;
+                    fprintf(errFile, "\n%s   Nesprávná hodnota krokování času. Hodnota musí být ostře větší než 0.%s\n\n", RED, RST);
                     exit(BAD_ARG_VALUE);
                 }
                 break;
