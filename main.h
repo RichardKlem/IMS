@@ -50,10 +50,15 @@ static struct option long_options[] =
                 {"col",    optional_argument,  nullptr, 'y'},
                 {"time",    optional_argument,  nullptr, 't'},
                 {"time-step",    optional_argument,  nullptr, 's'},
+                {"forward-p",    optional_argument,  nullptr, 'f'},
+                {"right-p",    optional_argument,  nullptr, 'r'},
+                {"back-p",    optional_argument,  nullptr, 'b'},
+                {"left-p",    optional_argument,  nullptr, 'l'},
+                {"stay-p",    optional_argument,  nullptr, 'z'},
                 {nullptr, 0, nullptr, 0}
         };
 // Definice krátkých přepínačů.
-char *short_options = (char*)"hn:i:m:x:y:t:s:";
+char *short_options = (char*)"hn:i:m:x:y:t:s:f:r:b:l:z:";
 
 /**
  * @brief Funkce zpracuje argumenty a nastaví podle nich proměnné.
@@ -61,7 +66,10 @@ char *short_options = (char*)"hn:i:m:x:y:t:s:";
  * @param argv ukazatel na pole argumentů
  * @param initInfectionRate ukazatel na proměnnou
  */
-void argParse(int argc, char **argv, unsigned int * number, unsigned int * initInfectionRate, unsigned int * initImmuneRate, unsigned int * x, unsigned int * y, unsigned int * time, unsigned int * step) {
+void argParse(int argc, char **argv, unsigned int * number, unsigned int * initInfectionRate,
+              unsigned int * initImmuneRate, unsigned int * x, unsigned int * y, unsigned int * time,
+              unsigned int * step, unsigned int * forwardP, unsigned int * rightP, unsigned int * leftP,
+              unsigned int * backP, unsigned int * stayP) {
     int c, option_index;
     while ((c = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1)
     {
@@ -132,6 +140,51 @@ void argParse(int argc, char **argv, unsigned int * number, unsigned int * initI
                 }
                 else {
                     cerr << endl << RED <<"   Nesprávná hodnota krokování času. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
+                    exit(BAD_ARG_VALUE);
+                }
+                break;
+            case 'f':
+                if (p_tmp->status) {
+                    *forwardP = p_tmp->num;
+                }
+                else {
+                    cerr << endl << RED <<"   Nesprávná hodnota pravdědopodobnosti pohybu dopředu. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
+                    exit(BAD_ARG_VALUE);
+                }
+                break;
+            case 'r':
+                if (p_tmp->status) {
+                    *rightP = p_tmp->num;
+                }
+                else {
+                    cerr << endl << RED <<"   Nesprávná hodnota pravdědopodobnosti pohybu doprava. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
+                    exit(BAD_ARG_VALUE);
+                }
+                break;
+            case 'b':
+                if (p_tmp->status) {
+                    *backP = p_tmp->num;
+                }
+                else {
+                    cerr << endl << RED <<"   Nesprávná hodnota pravdědopodobnosti pohybu dozadu. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
+                    exit(BAD_ARG_VALUE);
+                }
+                break;
+            case 'l':
+                if (p_tmp->status) {
+                    *leftP = p_tmp->num;
+                }
+                else {
+                    cerr << endl << RED <<"   Nesprávná hodnota pravdědopodobnosti pohybu doleva. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
+                    exit(BAD_ARG_VALUE);
+                }
+                break;
+            case 'z':
+                if (p_tmp->status) {
+                    *stayP = p_tmp->num;
+                }
+                else {
+                    cerr << endl << RED <<"   Nesprávná hodnota pravdědopodobnosti setrvání na místě. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
                     exit(BAD_ARG_VALUE);
                 }
                 break;
