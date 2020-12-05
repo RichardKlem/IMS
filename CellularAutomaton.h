@@ -266,7 +266,7 @@ public:
         return allInfectedOrImmune;
     }
 
-    void simulate(const unsigned int time,
+    void simulate(unsigned int time,
                   const unsigned int step,
                   const unsigned int infectionRatio,
                   unsigned int immuneRatio,
@@ -278,7 +278,7 @@ public:
         initInfection(infectionRatio, immuneRatio);
         dumpMatrixToFile(0);
         // Cyklí se přes modelový čas!
-        for (unsigned int t = 0; t < time; ++t) {
+        for (unsigned int t = 0; t < ++time; ++t) {
             static bool allInfectedOrImmune = false;
             auto newMatrix = new Matrix<Cell>(getX(), getY());
             initCellPositions();
@@ -291,11 +291,14 @@ public:
                 dumpMatrixToFile(t+1);
             }
             else if ((t % step != 0) && (allInfectedOrImmune)){
+                cout << "Simulation got " << t << " cycles" << endl;
                 dumpMatrixToFile(t+1);
                 return;
             }
-            if (allInfectedOrImmune)
+            if (allInfectedOrImmune) {
+                cout << "Simulation got " << time << " cycles" << endl;
                 return;
+            }
         }
     }
 };
