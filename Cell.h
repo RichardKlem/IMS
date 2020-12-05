@@ -21,6 +21,7 @@ private:
     Person * person{nullptr};
     unsigned int x = 0, y = 0;
     Matrix<Cell> * parentMatrix;
+
 public:
     Cell *const *getNeighbours() {
         return neighbours;

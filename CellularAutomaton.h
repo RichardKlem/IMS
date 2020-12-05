@@ -204,48 +204,58 @@ public:
             switch (nextMove) {
                 case FORWARD:
                     if (
+                            (person.getX() != 0) &&
                             (*oldMatrix)[person.getX() - 1][person.getY()].getState() == FREE &&
                             (*newMatrix)[person.getX() - 1][person.getY()].getState() == FREE
-                            ) {
+                        )
+                    {
                         (*newMatrix)[person.getX() - 1][person.getY()].setPerson(&person);
                         (*newMatrix)[person.getX() - 1][person.getY()].setState(OCCUPIED);
+                        person.setX(person.getX() - 1);
                         break;
                     }
                 case RIGHT:
                     if (
+                            (person.getY() < (*oldMatrix).dim.second - 1) &&
                             (*oldMatrix)[person.getX()][person.getY() + 1].getState() == FREE &&
                             (*newMatrix)[person.getX()][person.getY() + 1].getState() == FREE
-                            )
+                        )
                     {
                         (*newMatrix)[person.getX()][person.getY() + 1].setPerson(&person);
                         (*newMatrix)[person.getX()][person.getY() + 1].setState(OCCUPIED);
+                        person.setY(person.getY() + 1);
                         break;
                     }
                 case BACK:
                     if (
+                            (person.getX() < (*oldMatrix).dim.first - 1) &&
                             (*oldMatrix)[person.getX() + 1][person.getY()].getState() == FREE &&
                             (*newMatrix)[person.getX() + 1][person.getY()].getState() == FREE
-                            )
+                        )
                     {
                         (*newMatrix)[person.getX() + 1][person.getY()].setPerson(&person);
                         (*newMatrix)[person.getX() + 1][person.getY()].setState(OCCUPIED);
+                        person.setX(person.getX() + 1);
                         break;
                     }
                 case LEFT:
-                    if (
-                            (*oldMatrix)[person.getX()][person.getY() - 1].getState() == FREE &&
-                            (*newMatrix)[person.getX()][person.getY() - 1].getState() == FREE
+                        if (
+                                (person.getY() != 0) &&
+                                (*oldMatrix)[person.getX()][person.getY() - 1].getState() == FREE &&
+                                (*newMatrix)[person.getX()][person.getY() - 1].getState() == FREE
                             )
-                    {
-                        (*newMatrix)[person.getX()][person.getY() - 1].setPerson(&person);
-                        (*newMatrix)[person.getX()][person.getY() - 1].setState(OCCUPIED);
-                        break;
-                    }
+                        {
+                            (*newMatrix)[person.getX()][person.getY() - 1].setPerson(&person);
+                            (*newMatrix)[person.getX()][person.getY() - 1].setState(OCCUPIED);
+                            person.setY(person.getY() - 1);
+                            break;
+                        }
                 default:
                     (*newMatrix)[person.getX()][person.getY()].setPerson(&person);
                     (*newMatrix)[person.getX()][person.getY()].setState(OCCUPIED);
 
             }
+
             if (person.getState() == HEALTHY)
                 allInfectedOrImmune = false;
         }
