@@ -43,7 +43,9 @@ const char * help_text = "\n***Nápověda k CA simuláru***\n"
 static struct option long_options[] =
         {
                 {"help",   no_argument,        nullptr, 'h'},
-                {"ratio",    optional_argument,  nullptr, 'r'},
+                {"number",    optional_argument,  nullptr, 'n'},
+                {"infected",    optional_argument,  nullptr, 'i'},
+                {"immune",    optional_argument,  nullptr, 'm'},
                 {"row",    optional_argument,  nullptr, 'x'},
                 {"col",    optional_argument,  nullptr, 'y'},
                 {"time",    optional_argument,  nullptr, 't'},
@@ -51,7 +53,7 @@ static struct option long_options[] =
                 {nullptr, 0, nullptr, 0}
         };
 // Definice krátkých přepínačů.
-char *short_options = (char*)"hr:x:y:t:s:";
+char *short_options = (char*)"hn:i:m:x:y:t:s:";
 
 /**
  * @brief Funkce zpracuje argumenty a nastaví podle nich proměnné.
@@ -59,7 +61,7 @@ char *short_options = (char*)"hr:x:y:t:s:";
  * @param argv ukazatel na pole argumentů
  * @param initInfectionRate ukazatel na proměnnou
  */
-void argParse(int argc, char **argv, unsigned int * initInfectionRate, unsigned int * x, unsigned int * y, unsigned int * time, unsigned int * step) {
+void argParse(int argc, char **argv, unsigned int * number, unsigned int * initInfectionRate, unsigned int * initImmuneRate, unsigned int * x, unsigned int * y, unsigned int * time, unsigned int * step) {
     int c, option_index;
     while ((c = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1)
     {
@@ -70,12 +72,30 @@ void argParse(int argc, char **argv, unsigned int * initInfectionRate, unsigned 
             case 'h':
                 fprintf(outFile,"%s", help_text);
                 exit (OK);
-            case 'r':
+            case 'n':
+                if (p_tmp->status) {
+                    *number = p_tmp->num;
+                }
+                else {
+                    cerr << endl << RED <<"   Nesprávná hodnota počtu lidí. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
+                    exit(BAD_ARG_VALUE);
+                }
+                break;
+            case 'i':
                 if (p_tmp->status) {
                     *initInfectionRate = p_tmp->num;
                 }
                 else {
                     cerr << endl << RED <<"   Nesprávná hodnota poměru prvotního nakažení. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
+                    exit(BAD_ARG_VALUE);
+                }
+                break;
+            case 'm':
+                if (p_tmp->status) {
+                    *initImmuneRate = p_tmp->num;
+                }
+                else {
+                    cerr << endl << RED <<"   Nesprávná hodnota poměru imunních jedinců. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
                     exit(BAD_ARG_VALUE);
                 }
                 break;

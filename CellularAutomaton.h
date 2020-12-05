@@ -48,16 +48,25 @@ public:
         CellularAutomaton::y = newY;
     }
 
-    void initInfection(unsigned int infectionRatio) {
+    void initInfection(const unsigned int infectionRatio, const unsigned int immuneRatio) {
         srand((int) time(nullptr)); // Set random seed
         unsigned int infectedCount = round((double) persons.size() / infectionRatio);
+        unsigned int immuneCount = round((double) persons.size() / immuneRatio);
         if (infectedCount == 0)
             infectedCount = 1;
+        if (immuneCount == 0)
+            immuneCount = 1;
+
         printf("Infecting randomly: %d persons\n", infectedCount);
         for (unsigned int i = 0; i < infectedCount; ++i) {
-            auto index = rand() % persons.size();  // Případ, kdy rand() vygeneruje stejné číslo se neřeší
-            persons.at(index).setState(INFECTED);
-            persons.at(index).setNextState(INFECTED);
+            //auto index = rand() % persons.size();  // Případ, kdy rand() vygeneruje stejné číslo se neřeší
+            persons.at(i).setState(INFECTED);
+            persons.at(i).setNextState(INFECTED);
+        }
+        printf("Immuning randomly: %d persons\n", immuneCount);
+        for (unsigned int i = 0; i < immuneCount; ++i) {
+            persons.at(i).setState(IMMUNE);
+            persons.at(i).setNextState(IMMUNE);
         }
     }
 
@@ -157,8 +166,8 @@ public:
         return allInfected;
     }
 
-    void simulate(const unsigned int time, unsigned int infectionRatio, unsigned int step) {
-        initInfection(infectionRatio);
+    void simulate(const unsigned int time, const unsigned int infectionRatio, unsigned int immuneRatio, const unsigned int step) {
+        initInfection(infectionRatio, immuneRatio);
         dumpMatrixToFile(0);
         // Cyklí se přes modelový čas!
         for (unsigned int t = 0; t < time; ++t) {
