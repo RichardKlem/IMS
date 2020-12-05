@@ -57,16 +57,19 @@ public:
         if (immuneCount == 0)
             immuneCount = 1;
 
+        int j = 0;
         printf("Infecting randomly: %d persons\n", infectedCount);
         for (unsigned int i = 0; i < infectedCount; ++i) {
             //auto index = rand() % persons.size();  // Případ, kdy rand() vygeneruje stejné číslo se neřeší
-            persons.at(i).setState(INFECTED);
-            persons.at(i).setNextState(INFECTED);
+            persons.at(j).setState(INFECTED);
+            persons.at(j).setNextState(INFECTED);
+            j++;
         }
         printf("Immuning randomly: %d persons\n", immuneCount);
         for (unsigned int i = 0; i < immuneCount; ++i) {
-            persons.at(i).setState(IMMUNE);
-            persons.at(i).setNextState(IMMUNE);
+            persons.at(j).setState(IMMUNE);
+            persons.at(j).setNextState(IMMUNE);
+            j++;
         }
     }
 
