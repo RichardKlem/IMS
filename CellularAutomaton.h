@@ -18,7 +18,7 @@
 
 class CellularAutomaton {
 private:
-    Matrix<Cell> matrix;
+    Matrix<Cell> * matrix;
     vector<Person> persons;
     unsigned int x = 0;
     unsigned int y = 0;
@@ -26,11 +26,11 @@ private:
 
 public:
     Matrix<Cell> &getMatrix() {
-        return matrix;
+        return *matrix;
     }
 
     void setMatrix(Matrix<Cell> &m) {
-        CellularAutomaton::matrix = m;
+        CellularAutomaton::matrix = &m;
     }
     unsigned int getX() {
         return x;
@@ -57,6 +57,7 @@ public:
         for (unsigned int i = 0; i < infectedCount; ++i) {
             auto index = rand() % persons.size();  // Případ, kdy rand() vygeneruje stejné číslo se neřeší
             persons.at(index).setState(INFECTED);
+            persons.at(index).setNextState(INFECTED);
         }
     }
 
@@ -67,7 +68,7 @@ public:
     }
 
     CellularAutomaton(unsigned int x, unsigned int y, unsigned int numOfPersons, const vector<pair<unsigned int, unsigned int>> * walls):
-        matrix{Matrix<Cell>(x, y)},
+        matrix{new Matrix<Cell>(x, y)},
         persons{vector<Person>(numOfPersons, Person())},
         x{x},
         y{y},
@@ -79,12 +80,12 @@ public:
         ofstream file(fileName);
         for (unsigned int i = 0; i < getX(); ++i) {
             for (unsigned int j = 0; j < getY(); ++j) {
-                auto person = matrix[i][j].getPerson();
+                auto person = (*matrix)[i][j].getPerson();
                 if (person != nullptr){
                     file << person->getState();
                 }
                 else
-                    file << matrix[i][j].getState();
+                    file << (*matrix)[i][j].getState();
             }
             file << endl;
         }
@@ -96,13 +97,13 @@ public:
         for (auto & person: persons) {
             auto newPersonX = rand() % getX();
             auto newPersonY = rand() % getY();
-            if (matrix[newPersonX][newPersonY].getState() != FREE) {
+            if ((*matrix)[newPersonX][newPersonY].getState() != FREE) {
                 bool found = false;
                 for (unsigned int i = 0; i < getX(); ++i) {
                     for (unsigned int j = 0; j < getY(); ++j) {
-                        if (matrix[i][j].getState() == FREE) {
-                            matrix[i][j].setState(OCCUPIED);
-                            matrix[i][j].setPerson(&person);
+                        if ((*matrix)[i][j].getState() == FREE) {
+                            (*matrix)[i][j].setState(OCCUPIED);
+                            (*matrix)[i][j].setPerson(&person);
                             person.setX(i);
                             person.setY(j);
                             found = true;
@@ -114,8 +115,8 @@ public:
                 }
             }
             else {
-                matrix[newPersonX][newPersonY].setState(OCCUPIED);
-                matrix[newPersonX][newPersonY].setPerson(&person);
+                (*matrix)[newPersonX][newPersonY].setState(OCCUPIED);
+                (*matrix)[newPersonX][newPersonY].setPerson(&person);
                 person.setX(newPersonX);
                 person.setY(newPersonY);
             }
@@ -128,9 +129,9 @@ public:
     void initCellPositions() {
         for (unsigned int i = 0; i < getX(); ++i) {
             for (unsigned int j = 0; j < getY(); ++j) {
-                matrix[i][j].setX(i);
-                matrix[i][j].setY(j);
-                matrix[i][j].initNeighbours();
+                (*matrix)[i][j].setX(i);
+                (*matrix)[i][j].setY(j);
+                (*matrix)[i][j].initNeighbours();
             }
         }
     }
@@ -141,7 +142,7 @@ public:
             for (unsigned int i = 0; i < NUM_OF_NEIGHBOURS; ++i) {
                 auto neighbour = (*oldMatrix)[person.getX()][person.getY()].getNeighbours()[i];
                 if (neighbour != nullptr && neighbour->getPerson() != nullptr && neighbour->getPerson()->getState() == INFECTED)
-                    person.setState(INFECTED);
+                    person.setNextState(INFECTED);
             }
             (*newMatrix)[person.getX()][person.getY()].setPerson(&person);
             (*newMatrix)[person.getX()][person.getY()].setState(OCCUPIED);
@@ -149,6 +150,10 @@ public:
             if (person.getState() == HEALTHY)
                 allInfected = false;
         }
+        // Aktualizuji se stavy lidi, ale az po te co si vsichni vypocitaji novy stav z aktualnich hodnot.
+        for (auto & person: persons)
+            person.setState(person.getNextState());
+
         return allInfected;
     }
 
@@ -158,9 +163,10 @@ public:
         // Cyklí se přes modelový čas!
         for (unsigned int t = 0; t < time; ++t) {
             static bool allInfected = false;
-            auto newMatrix = Matrix<Cell>(getX(), getY());
-            initWalls(&newMatrix);
-            allInfected |= nextState(&getMatrix(), &newMatrix);
+            auto newMatrix = new Matrix<Cell>(getX(), getY());
+            initCellPositions();
+            initWalls(newMatrix);
+            allInfected |= nextState(&getMatrix(), newMatrix);
 
             matrix = newMatrix;
 
