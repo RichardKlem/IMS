@@ -15,6 +15,13 @@
 #include "Cell.h"
 #include "Person.h"
 
+enum MOVE {
+    FORWARD,
+    RIGHT,
+    BACK,
+    LEFT,
+    STAY
+};
 
 class CellularAutomaton {
 private:
@@ -147,8 +154,26 @@ public:
             }
         }
     }
-
-    bool nextState(Matrix<Cell> * oldMatrix, Matrix<Cell> * newMatrix) {
+    /**
+     * @brief Metoda pocita a nastavuje novou pozici a novy stav cloveka. Clovek muze jit dopredu, dozadu, doleva,
+     * doprava nebo muze stat na miste. V dany okamzik take muze zmenit svuj stav, pokud neni immunni a nekdo z jeho
+     * okoli ho nakazi.
+     * @param oldMatrix Stara mistnost
+     * @param newMatrix Nova mistnost
+     * @param forwardP Pravdepodobnost pohybu dopredu
+     * @param rightP Pravdepodobnost pohybu doprava
+     * @param leftP Pravdepodobnost pohybu doleva
+     * @param backP Pravdepodobnost pohybu dozadu
+     * @param stayP Pravdepodobnost zustanani na miste
+     * @return Vraci true, kdyz jsou vsichni lide nakazeni nebo imunni, jinak false
+     */
+    bool nextState(Matrix<Cell> * oldMatrix,
+                   Matrix<Cell> * newMatrix,
+                   const unsigned int forwardP,
+                   const unsigned int rightP,
+                   const unsigned int leftP,
+                   const unsigned int backP,
+                   const unsigned int stayP) {
         bool allInfectedOrImmune = true;
         for (auto & person: persons) {
             for (unsigned int i = 0; i < NUM_OF_NEIGHBOURS; ++i) {
@@ -161,9 +186,66 @@ public:
                         )
                     person.setNextState(INFECTED);
             }
-            (*newMatrix)[person.getX()][person.getY()].setPerson(&person);
-            (*newMatrix)[person.getX()][person.getY()].setState(OCCUPIED);
+            //Vygeneruje kam jde
+            auto nextMoveKoef = rand() % 100;
+            MOVE nextMove;
+            if (nextMoveKoef > 0 && nextMoveKoef < forwardP)
+                nextMove = FORWARD;
+            else if (nextMoveKoef > forwardP && nextMoveKoef < forwardP + rightP)
+                nextMove = RIGHT;
+            else if (nextMoveKoef > forwardP + rightP && nextMoveKoef < forwardP + rightP + backP)
+                nextMove = BACK;
+            else if (nextMoveKoef > forwardP + rightP + backP && nextMoveKoef < forwardP + rightP + backP + leftP)
+                nextMove = LEFT;
+            else
+                nextMove = STAY;
 
+            //Kdyz je tam volno, tak se tam zapise, jinak zkusi dalsi moznost, prinejhorsim zustane na miste.
+            switch (nextMove) {
+                case FORWARD:
+                    if (
+                            (*oldMatrix)[person.getX() - 1][person.getY()].getState() == FREE &&
+                            (*newMatrix)[person.getX() - 1][person.getY()].getState() == FREE
+                            ) {
+                        (*newMatrix)[person.getX() - 1][person.getY()].setPerson(&person);
+                        (*newMatrix)[person.getX() - 1][person.getY()].setState(OCCUPIED);
+                        break;
+                    }
+                case RIGHT:
+                    if (
+                            (*oldMatrix)[person.getX()][person.getY() + 1].getState() == FREE &&
+                            (*newMatrix)[person.getX()][person.getY() + 1].getState() == FREE
+                            )
+                    {
+                        (*newMatrix)[person.getX()][person.getY() + 1].setPerson(&person);
+                        (*newMatrix)[person.getX()][person.getY() + 1].setState(OCCUPIED);
+                        break;
+                    }
+                case BACK:
+                    if (
+                            (*oldMatrix)[person.getX() + 1][person.getY()].getState() == FREE &&
+                            (*newMatrix)[person.getX() + 1][person.getY()].getState() == FREE
+                            )
+                    {
+                        (*newMatrix)[person.getX() + 1][person.getY()].setPerson(&person);
+                        (*newMatrix)[person.getX() + 1][person.getY()].setState(OCCUPIED);
+                        break;
+                    }
+                case LEFT:
+                    if (
+                            (*oldMatrix)[person.getX()][person.getY() - 1].getState() == FREE &&
+                            (*newMatrix)[person.getX()][person.getY() - 1].getState() == FREE
+                            )
+                    {
+                        (*newMatrix)[person.getX()][person.getY() - 1].setPerson(&person);
+                        (*newMatrix)[person.getX()][person.getY() - 1].setState(OCCUPIED);
+                        break;
+                    }
+                default:
+                    (*newMatrix)[person.getX()][person.getY()].setPerson(&person);
+                    (*newMatrix)[person.getX()][person.getY()].setState(OCCUPIED);
+
+            }
             if (person.getState() == HEALTHY)
                 allInfectedOrImmune = false;
         }
@@ -174,7 +256,15 @@ public:
         return allInfectedOrImmune;
     }
 
-    void simulate(const unsigned int time, const unsigned int infectionRatio, unsigned int immuneRatio, const unsigned int step) {
+    void simulate(const unsigned int time,
+                  const unsigned int step,
+                  const unsigned int infectionRatio,
+                  unsigned int immuneRatio,
+                  const unsigned int forwardP,
+                  const unsigned int rightP,
+                  const unsigned int leftP,
+                  const unsigned int backP,
+                  const unsigned int stayP) {
         initInfection(infectionRatio, immuneRatio);
         dumpMatrixToFile(0);
         // Cyklí se přes modelový čas!
@@ -183,7 +273,7 @@ public:
             auto newMatrix = new Matrix<Cell>(getX(), getY());
             initCellPositions();
             initWalls(newMatrix);
-            allInfectedOrImmune |= nextState(&getMatrix(), newMatrix);
+            allInfectedOrImmune |= nextState(&getMatrix(), newMatrix, forwardP, rightP, leftP, backP, stayP);
 
             matrix = newMatrix;
 

@@ -8,7 +8,8 @@
 
 
 int main(int argc, char *argv[]) {
-    unsigned int number = 60, initInfectionRate = 10, initImmuneRate = 5, x = 23, y = 23, time = 50, step = 1;
+    unsigned int x = 23, y = 23, time = 10, step = 2, number = 60, initInfectionRate = 10, initImmuneRate = 5,
+    forwardP = 25, rightP = 25, leftP = 25, backP = 25, stayP = 0;
     vector<pair<unsigned int, unsigned int>> walls {{17, 0}, {17, 1}, {17, 2}, {17, 3},
                                                     {17, 4}, {17, 5}, {17, 6}, {18, 6},
                                                     {19, 6},
@@ -27,6 +28,6 @@ int main(int argc, char *argv[]) {
     CA.initWalls(&CA.getMatrix());
     CA.initCellPositions();
     CA.initPersonPositions();
-    CA.simulate(time, initInfectionRate, initImmuneRate, step);
+    CA.simulate(time, step, initInfectionRate, initImmuneRate, forwardP, rightP, leftP, backP, stayP);
     return 0;
 }
