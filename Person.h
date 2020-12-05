@@ -6,8 +6,8 @@
 #define IMS_PERSON_H
 
 enum covidState {
+        RESERVED0,
         RESERVED1,
-        RESERVED2,
         HEALTHY,
         INFECTED,
         IMMUNE,
@@ -17,6 +17,7 @@ enum covidState {
 class Person {
 private:
     covidState state = HEALTHY;
+    covidState nextState = state;
     unsigned int numOfInfections = 0;
     unsigned int x = 0, y = 0;
 public:
@@ -24,16 +25,23 @@ public:
         return state;
     }
 
-    void setState(covidState state) {
-        Person::state = state;
+    void setState(covidState newState) {
+        Person::state = newState;
+    }
+    covidState getNextState() {
+        return nextState;
+    }
+
+    void setNextState(covidState newNextState) {
+        Person::nextState = newNextState;
     }
 
     unsigned int getNumOfInfections() {
         return numOfInfections;
     }
 
-    void setNumOfInfections(unsigned int numOfInfections) {
-        Person::numOfInfections = numOfInfections;
+    void setNumOfInfections(unsigned int newNumOfInfections) {
+        Person::numOfInfections = newNumOfInfections;
     }
 
     unsigned int getX() {
@@ -52,6 +60,5 @@ public:
         Person::y = newY;
     }
 };
-
 
 #endif //IMS_PERSON_H
