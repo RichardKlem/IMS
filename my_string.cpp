@@ -2,7 +2,7 @@
 // Created by Richard Klem on 24.04.20.
 //
 #include <cstring>
-#include <sstream>
+#include <iostream>
 #include "my_string.h"
 
 /**
@@ -22,8 +22,7 @@ str2int_struct_t str2int (char * str){
         if (!isdigit(str[i]))
             return result;
     }
-
-    long int tmp = strtol(str, nullptr, 0);
+    long int tmp = strtol(str, nullptr, 10);
     if (tmp < 0)
         return result;
 
