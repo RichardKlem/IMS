@@ -149,24 +149,29 @@ public:
     }
 
     bool nextState(Matrix<Cell> * oldMatrix, Matrix<Cell> * newMatrix) {
-        bool allInfected = true;
+        bool allInfectedOrImmune = true;
         for (auto & person: persons) {
             for (unsigned int i = 0; i < NUM_OF_NEIGHBOURS; ++i) {
                 auto neighbour = (*oldMatrix)[person.getX()][person.getY()].getNeighbours()[i];
-                if (neighbour != nullptr && neighbour->getPerson() != nullptr && neighbour->getPerson()->getState() == INFECTED)
+                if (
+                        neighbour != nullptr &&
+                        neighbour->getPerson() != nullptr &&
+                        neighbour->getPerson()->getState() == INFECTED &&
+                        person.getState() != IMMUNE
+                        )
                     person.setNextState(INFECTED);
             }
             (*newMatrix)[person.getX()][person.getY()].setPerson(&person);
             (*newMatrix)[person.getX()][person.getY()].setState(OCCUPIED);
 
             if (person.getState() == HEALTHY)
-                allInfected = false;
+                allInfectedOrImmune = false;
         }
         // Aktualizuji se stavy lidi, ale az po te co si vsichni vypocitaji novy stav z aktualnich hodnot.
         for (auto & person: persons)
             person.setState(person.getNextState());
 
-        return allInfected;
+        return allInfectedOrImmune;
     }
 
     void simulate(const unsigned int time, const unsigned int infectionRatio, unsigned int immuneRatio, const unsigned int step) {
@@ -174,22 +179,22 @@ public:
         dumpMatrixToFile(0);
         // Cyklí se přes modelový čas!
         for (unsigned int t = 0; t < time; ++t) {
-            static bool allInfected = false;
+            static bool allInfectedOrImmune = false;
             auto newMatrix = new Matrix<Cell>(getX(), getY());
             initCellPositions();
             initWalls(newMatrix);
-            allInfected |= nextState(&getMatrix(), newMatrix);
+            allInfectedOrImmune |= nextState(&getMatrix(), newMatrix);
 
             matrix = newMatrix;
 
             if (t % step == 0) {
                 dumpMatrixToFile(t+1);
             }
-            else if ((t % step != 0) && (allInfected)){
+            else if ((t % step != 0) && (allInfectedOrImmune)){
                 dumpMatrixToFile(t+1);
                 return;
             }
-            if (allInfected)
+            if (allInfectedOrImmune)
                 return;
         }
     }
