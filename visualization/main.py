@@ -1,3 +1,4 @@
+import re
 import sys
 
 import matplotlib.pyplot as plt
@@ -5,7 +6,6 @@ from matplotlib import animation
 import numpy as np
 import os
 import matplotlib.colors
-
 
 PROJECT_DIRECTORY = os.path.dirname(os.getcwd())
 PYTHON_SCRIPT_DIR = os.getcwd()
@@ -20,7 +20,7 @@ RUN_CMD = f"cd  {PYTHON_SCRIPT_DIR}/build/ && ./ebola"
 
 GLOBAL_TIME = -1
 
-colors = ["gray", "white", "green", "red"]
+colors = ["gray", "white", "green", "red", "yellow"]
 
 cmap = matplotlib.colors.ListedColormap(colors)
 
@@ -73,7 +73,8 @@ def init_figure(initial_grid, update_interval, len):
     ax = plt.gca()
     rows_shape, col_shape = np.array(initial_grid).shape
     set_grid_ticks(ax, rows_shape, col_shape)
-    ani = animation.FuncAnimation(fig, update_fig, init_func=init_grid, frames=len, fargs=(img, initial_grid), interval=update_interval, repeat=False)
+    ani = animation.FuncAnimation(fig, update_fig, init_func=init_grid, frames=len, fargs=(img, initial_grid),
+                                  interval=update_interval, repeat=False)
     plt.show()
 
 
@@ -92,8 +93,9 @@ def main():
 
     global files
     files = os.listdir(DUMP_DIRECTORY)
+
     files = [file for file in files if file.startswith("matrix_dump")]
-    files.sort()
+    files.sort(key=lambda x: [int(c) if c.isdigit() else c for c in re.split('^[a-z]+_[a-z]+(\d+).txt$', x)])
 
     initial_grid = update_grid([])
     init_figure(initial_grid, UPDATE_INTERVAL, len(files) - 1)
