@@ -15,22 +15,24 @@ EXTENSION = ".txt"
 
 RMDIR_CMD = f"rm -r {DUMP_DIRECTORY}"
 MKDIR_CMD = f"mkdir {DUMP_DIRECTORY}"
-BUILD_CMD = f"cmake -B  {PYTHON_SCRIPT_DIR}/build/ -S {PROJECT_DIRECTORY} && cd ./build/ && make -"
+BUILD_CMD = f"cmake -B  {PYTHON_SCRIPT_DIR}/build/ -S {PROJECT_DIRECTORY} && cd ./build/ && make"
 RUN_CMD = f"cd  {PYTHON_SCRIPT_DIR}/build/ && ./ebola"
 
 GLOBAL_TIME = -1
 
-colors = ["white", "gray", "green", "red"]
+colors = ["gray", "white", "green", "red"]
 
 cmap = matplotlib.colors.ListedColormap(colors)
+
+files = []
 
 
 def update_grid(grid):
     global GLOBAL_TIME
     GLOBAL_TIME = GLOBAL_TIME + 1
-    absolute_file_path = DUMP_DIRECTORY + FILENAME + str(GLOBAL_TIME) + EXTENSION
-    print(absolute_file_path)
-    if os.path.isfile(absolute_file_path):
+
+    if GLOBAL_TIME < len(files):
+        absolute_file_path = DUMP_DIRECTORY + files[GLOBAL_TIME]
         new_grid = []
         with open(absolute_file_path) as f:
             for line in f:
@@ -38,8 +40,6 @@ def update_grid(grid):
                 new_grid.append([int(num) for num in row])
 
         grid[:] = new_grid[:]
-    else:
-        grid[:] = grid[:]
     return grid
 
 
@@ -56,13 +56,24 @@ def set_grid_ticks(ax, ncol_shape, rows_shape):
     plt.grid(which="minor", ls="-", lw=2)
 
 
-def init_figure(initial_grid, update_interval):
+def init_grid():
+    absolute_file_path = DUMP_DIRECTORY + files[0]
+    new_grid = []
+    with open(absolute_file_path) as f:
+        for line in f:
+            row = line[:-1]
+            new_grid.append([int(num) for num in row])
+
+    return new_grid
+
+
+def init_figure(initial_grid, update_interval, len):
     fig = plt.figure()
     img = plt.matshow(initial_grid, fignum=1, interpolation="nearest", cmap=cmap)
     ax = plt.gca()
     rows_shape, col_shape = np.array(initial_grid).shape
     set_grid_ticks(ax, rows_shape, col_shape)
-    ani = animation.FuncAnimation(fig, update_fig, fargs=(img, initial_grid), interval=update_interval)
+    ani = animation.FuncAnimation(fig, update_fig, init_func=init_grid, frames=len, fargs=(img, initial_grid), interval=update_interval, repeat=False)
     plt.show()
 
 
@@ -79,8 +90,13 @@ def main():
 
     start_simulation()
 
+    global files
+    files = os.listdir(DUMP_DIRECTORY)
+    files = [file for file in files if file.startswith("matrix_dump")]
+    files.sort()
+
     initial_grid = update_grid([])
-    init_figure(initial_grid, UPDATE_INTERVAL)
+    init_figure(initial_grid, UPDATE_INTERVAL, len(files) - 1)
 
 
 if __name__ == '__main__':
