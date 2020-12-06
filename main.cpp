@@ -8,8 +8,8 @@
 
 
 int main(int argc, char *argv[]) {
-    unsigned int x = 23, y = 23, time = 50, step = 1, number = 60, initInfectionRate = 10, initImmuneRate = 5,
-    forwardP = 25, rightP = 25, leftP = 25, backP = 25, stayP = 0;
+    unsigned int x = 23, y = 23, time = 50, step = 1000, number = 60, initInfectionRate = 10, initImmuneRate = 20,
+    forwardP = 20, rightP = 20, leftP = 20, backP = 20, stayP = 20;
     string dumpDir = "./";
     vector<pair<unsigned int, unsigned int>> walls {{17, 0}, {17, 1}, {17, 2}, {17, 3},
                                                     {17, 4}, {17, 5}, {17, 6}, {18, 6},
