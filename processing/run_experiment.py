@@ -18,13 +18,13 @@ import sys
 
 
 RESULT_FILE = "results{0}.txt"
-HEADER = ["#", "N(0)", "S(0)", "I(0)", "p_f", "p_b", "p_r", "p_l", "p_s", "Cycles"]
+HEADER = ["#", "N(0)", "S(0)", "I(0)", "p<sub>f</sub>", "p<sub>b</sub>", "p<sub>r</sub>", "p<sub>l</sub>",
+          "p<sub>s</sub>", "Cycles"]
 BIN_NAME = "covid"
 
 PROJECT_DIRECTORY = os.path.dirname(os.getcwd())
 PYTHON_SCRIPT_DIR = os.getcwd()
 
-BUILD_CMD = f"cmake -B  {PYTHON_SCRIPT_DIR}/build/ -S {PROJECT_DIRECTORY} && cd ./build/ && make"
 MAKE_CMD = "make"
 RUN_CMD = "./" + BIN_NAME + " {0}"
 
@@ -71,13 +71,9 @@ def main():
                     extracted_args.append([arguments.group(1)] + split_args[1:-1:2] + [split_args[-1]] +
                                           [str(sum(average_cycles) / len(average_cycles))])
 
-        with open("agregated_results", "ab+") as f:
-            pickle.dump(extracted_args, f)
-
-    with open("agregated_results", "rb") as f:
-        df = pd.DataFrame(np.array(pickle.load(f)).transpose(), HEADER).transpose()
-        with open("agregated_results.html", "w") as html_file:
-            html_file.writelines(df.to_html())
+    df = pd.DataFrame(np.array(extracted_args).transpose(), HEADER).transpose()
+    with open("agregated_results.html", "w") as html_file:
+        html_file.writelines(df.to_html(escape=False))
     return 0
 
 
