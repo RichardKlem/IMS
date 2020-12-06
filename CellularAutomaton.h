@@ -231,13 +231,13 @@ public:
             // Vygeneruje se směr, kam člověk půjde.
             auto nextMoveKoef = randIMS(0, 100);
             direction nextMove;
-            if ((nextMoveKoef > 0) && (nextMoveKoef < forwardP))
+            if ((nextMoveKoef >= 0) && (nextMoveKoef < forwardP))
                 nextMove = FORWARD;
-            else if ((nextMoveKoef > forwardP) && (nextMoveKoef < forwardP + rightP))
+            else if ((nextMoveKoef >= forwardP) && (nextMoveKoef < forwardP + rightP))
                 nextMove = RIGHT;
-            else if ((nextMoveKoef > forwardP + rightP) && (nextMoveKoef < forwardP + rightP + backP))
+            else if ((nextMoveKoef >= forwardP + rightP) && (nextMoveKoef < forwardP + rightP + backP))
                 nextMove = BACK;
-            else if ((nextMoveKoef > forwardP + rightP + backP) && (nextMoveKoef < forwardP + rightP + backP + leftP))
+            else if ((nextMoveKoef >= forwardP + rightP + backP) && (nextMoveKoef < forwardP + rightP + backP + leftP))
                 nextMove = LEFT;
             else
                 nextMove = STAY;
