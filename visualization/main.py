@@ -16,11 +16,11 @@ EXTENSION = ".txt"
 RMDIR_CMD = f"rm -r {DUMP_DIRECTORY}"
 MKDIR_CMD = f"mkdir {DUMP_DIRECTORY}"
 BUILD_CMD = f"cmake -B  {PYTHON_SCRIPT_DIR}/build/ -S {PROJECT_DIRECTORY} && cd ./build/ && make"
-RUN_CMD = f"cd  {PYTHON_SCRIPT_DIR}/build/ && ./ebola"
+RUN_CMD = f"cd  {PYTHON_SCRIPT_DIR}/build/ && ./covid"
 
 GLOBAL_TIME = -1
 
-colors = ["gray", "white", "green", "red", "yellow"]
+colors = ["gray", "white", "green", "red", "blue"]
 
 cmap = matplotlib.colors.ListedColormap(colors)
 
@@ -87,8 +87,7 @@ def start_simulation():
 
 
 def main():
-    UPDATE_INTERVAL = 1000
-
+    update_interval = 1000
     start_simulation()
 
     global files
@@ -98,7 +97,7 @@ def main():
     files.sort(key=lambda x: [int(c) if c.isdigit() else c for c in re.split('^[a-z]+_[a-z]+(\d+).txt$', x)])
 
     initial_grid = update_grid([])
-    init_figure(initial_grid, UPDATE_INTERVAL, len(files) - 1)
+    init_figure(initial_grid, update_interval, len(files) - 1)
 
 
 if __name__ == '__main__':
