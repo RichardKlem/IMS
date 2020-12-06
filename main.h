@@ -72,15 +72,15 @@ static struct option long_options[] =
 char *short_options = (char*)"hn:i:m:x:y:s:f:r:b:l:z:d:";
 
 /**
- * @brief Funkce zpracuje argumenty a nastaví podle nich proměnné.
+  * @brief Funkce zpracuje argumenty a nastaví podle nich proměnné.
  * @param argc počet argumentů
  * @param argv ukazatel na pole argumentů
- * @param initInfectionRate ukazatel na proměnnou
+ * Dále obsahuje řadu ukazatelů na proměnné, do kterých se uloží hodnoty zadaných argumentů.
  */
 void argParse(int argc, char **argv, unsigned int * number, unsigned int * initInfectionRate,
-              unsigned int * initImmuneRate, unsigned int * x, unsigned int * y, unsigned int * time,
-              unsigned int * step, unsigned int * forwardP, unsigned int * rightP, unsigned int * leftP,
-              unsigned int * backP, unsigned int * stayP, string * dumpDir) {
+              unsigned int * initImmuneRate, unsigned int * x, unsigned int * y, unsigned int * step,
+              unsigned int * forwardP, unsigned int * rightP, unsigned int * leftP, unsigned int * backP,
+              unsigned int * stayP, string * dumpDir) {
     int c, option_index;
     while ((c = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1)
     {

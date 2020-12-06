@@ -324,7 +324,6 @@ public:
 
     /**
      * @brief Metoda obstarava samotnou simulaci sireni koronoaviru se zadanymi parametry.
-     * @param time
      * @param step Krok, se kterým se budou ukládat data z matice do souborů.
      * @param infectionRatio Počet nakažených lidí v prostoru, v procentech (%).
      * @param immuneRatio Počet imunních lidí v prostoru, v procentech (%).
@@ -335,8 +334,7 @@ public:
      * @param stayP Pravděpodobnost zůstání na místě.
      * @param dumpDir Název složky, kam se budou ukládat data z prostoru (matice).
      */
-    void simulate(unsigned int time,
-                  const unsigned int step,
+    void simulate(const unsigned int step,
                   const unsigned int infectionRatio,
                   unsigned int immuneRatio,
                   const unsigned int forwardP,
@@ -347,8 +345,10 @@ public:
                   const string *dumpDir) {
         initInfection(infectionRatio, immuneRatio);
         dumpMatrixToFile(0, dumpDir);
+        unsigned int tp1 = 1;
         // Cyklí se přes modelový čas!
-        for (unsigned int t = 0; t < ++time; ++t) {
+        static bool allInfectedOrImmune = false;
+        for (unsigned int t = 0; t < ++tp1; ++t) {
             static bool allInfectedOrImmune = false;
             auto newMatrix = new Matrix<Cell>(getX(), getY());
             initCellPositions();
