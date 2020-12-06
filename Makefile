@@ -10,7 +10,7 @@ all: $(SOURCES)
 
 
 run:
-	sudo ./ebola
+	sudo ./covid
 
 cleanall:
-	rm  ebola
+	rm  covid
