@@ -11,9 +11,20 @@
 #include <ctime>
 #include <string>
 #include <cmath>
+#include <random>
+#include <chrono>
 #include "Matrix.h"
 #include "Cell.h"
 #include "Person.h"
+
+inline char separator()
+{
+#ifdef _WIN32
+    return '\\';
+#else
+    return '/';
+#endif
+}
 
 enum MOVE {
     FORWARD,
@@ -56,23 +67,20 @@ public:
     }
 
     void initInfection(const unsigned int infectionRatio, const unsigned int immuneRatio) {
-        srand((int) time(nullptr)); // Set random seed
-        unsigned int infectedCount = round((double) persons.size() / infectionRatio);
-        unsigned int immuneCount = round((double) persons.size() / immuneRatio);
+        //srand((int) time(nullptr)); // Set random seed
+        unsigned int infectedCount = round((double) persons.size() / 100 * infectionRatio);
+        unsigned int immuneCount = round((double) persons.size() / 100 * immuneRatio);
         if (infectedCount == 0)
             infectedCount = 1;
         if (immuneCount == 0)
             immuneCount = 1;
 
         int j = 0;
-        printf("Infecting randomly: %d persons\n", infectedCount);
         for (unsigned int i = 0; i < infectedCount; ++i) {
-            //auto index = rand() % persons.size();  // Případ, kdy rand() vygeneruje stejné číslo se neřeší
             persons.at(j).setState(INFECTED);
             persons.at(j).setNextState(INFECTED);
             j++;
         }
-        printf("Immuning randomly: %d persons\n", immuneCount);
         for (unsigned int i = 0; i < immuneCount; ++i) {
             persons.at(j).setState(IMMUNE);
             persons.at(j).setNextState(IMMUNE);
@@ -94,8 +102,8 @@ public:
         walls{*walls}
         {;    };
 
-    void dumpMatrixToFile(unsigned int time) {
-        string fileName = "matrix_dump" + to_string(time) + ".txt";
+    void dumpMatrixToFile(unsigned int time, const string * dumpDir) {
+        string fileName = *dumpDir + separator() + "matrix_dump" + to_string(time) + ".txt";
         ofstream file(fileName);
         for (unsigned int i = 0; i < getX(); ++i) {
             for (unsigned int j = 0; j < getY(); ++j) {
@@ -110,35 +118,27 @@ public:
         }
         file.close();
     }
+    static void dumpCyclesToFile(const unsigned int cycles, const string * dumpDir) {
+        string fileName = *dumpDir + separator() + "results.txt";
+        ofstream file(fileName);
+        file << cycles << endl;
+        file.close();
+    }
 
     void initPersonPositions() {
-        srand((int) time(nullptr)); // Set random seed
         for (auto & person: persons) {
-            auto newPersonX = rand() % getX();
-            auto newPersonY = rand() % getY();
-            if ((*matrix)[newPersonX][newPersonY].getState() != FREE) {
-                bool found = false;
-                for (unsigned int i = 0; i < getX(); ++i) {
-                    for (unsigned int j = 0; j < getY(); ++j) {
-                        if ((*matrix)[i][j].getState() == FREE) {
-                            (*matrix)[i][j].setState(OCCUPIED);
-                            (*matrix)[i][j].setPerson(&person);
-                            person.setX(i);
-                            person.setY(j);
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (found)
-                        break;
+            bool didNotFoundPosition = true;
+            do {
+                auto newPersonX = rand(0, getX() - 1);
+                auto newPersonY = rand(0, getY() - 1);
+                if ((*matrix)[newPersonX][newPersonY].getState() == FREE) {
+                    (*matrix)[newPersonX][newPersonY].setState(OCCUPIED);
+                    (*matrix)[newPersonX][newPersonY].setPerson(&person);
+                    person.setX(newPersonX);
+                    person.setY(newPersonY);
+                    didNotFoundPosition = false;
                 }
-            }
-            else {
-                (*matrix)[newPersonX][newPersonY].setState(OCCUPIED);
-                (*matrix)[newPersonX][newPersonY].setPerson(&person);
-                person.setX(newPersonX);
-                person.setY(newPersonY);
-            }
+            } while (didNotFoundPosition);
         }
     }
 
@@ -186,16 +186,16 @@ public:
                         )
                     person.setNextState(INFECTED);
             }
-            //Vygeneruje kam jde
-            auto nextMoveKoef = rand() % 100;
+            //Vygeneruje kam jde.
+            auto nextMoveKoef = rand(0, 100);
             MOVE nextMove;
-            if (nextMoveKoef > 0 && nextMoveKoef < forwardP)
+            if ((nextMoveKoef > 0) && (nextMoveKoef < forwardP))
                 nextMove = FORWARD;
-            else if (nextMoveKoef > forwardP && nextMoveKoef < forwardP + rightP)
+            else if ((nextMoveKoef > forwardP) && (nextMoveKoef < forwardP + rightP))
                 nextMove = RIGHT;
-            else if (nextMoveKoef > forwardP + rightP && nextMoveKoef < forwardP + rightP + backP)
+            else if ((nextMoveKoef > forwardP + rightP) && (nextMoveKoef < forwardP + rightP + backP))
                 nextMove = BACK;
-            else if (nextMoveKoef > forwardP + rightP + backP && nextMoveKoef < forwardP + rightP + backP + leftP)
+            else if ((nextMoveKoef > forwardP + rightP + backP) && (nextMoveKoef < forwardP + rightP + backP + leftP))
                 nextMove = LEFT;
             else
                 nextMove = STAY;
@@ -266,6 +266,13 @@ public:
         return allInfectedOrImmune;
     }
 
+    static unsigned long rand(unsigned long a, unsigned long b) {
+        typedef std::mt19937 rng_type;
+        std::uniform_int_distribution<rng_type::result_type> udist(a, b);
+        rng_type rng(chrono::steady_clock::now().time_since_epoch().count());
+        rng_type::result_type random_number = udist(rng);
+        return random_number;
+    }
     void simulate(unsigned int time,
                   const unsigned int step,
                   const unsigned int infectionRatio,
@@ -274,9 +281,10 @@ public:
                   const unsigned int rightP,
                   const unsigned int leftP,
                   const unsigned int backP,
-                  const unsigned int stayP) {
+                  const unsigned int stayP,
+                  const string *dumpDir) {
         initInfection(infectionRatio, immuneRatio);
-        dumpMatrixToFile(0);
+        dumpMatrixToFile(0, dumpDir);
         // Cyklí se přes modelový čas!
         for (unsigned int t = 0; t < ++time; ++t) {
             static bool allInfectedOrImmune = false;
@@ -288,15 +296,17 @@ public:
             matrix = newMatrix;
 
             if (t % step == 0) {
-                dumpMatrixToFile(t+1);
+                dumpMatrixToFile(t+1, dumpDir);
             }
             else if ((t % step != 0) && (allInfectedOrImmune)){
-                cout << "Simulation got " << t << " cycles" << endl;
-                dumpMatrixToFile(t+1);
+                //cout << "Simulation got " << t << " cycles" << endl;
+                dumpMatrixToFile(t+1, dumpDir);
+                dumpCyclesToFile(t, dumpDir);
                 return;
             }
             if (allInfectedOrImmune) {
-                cout << "Simulation got " << time << " cycles" << endl;
+                //cout << "Simulation got " << t << " cycles" << endl;
+                dumpCyclesToFile(t, dumpDir);
                 return;
             }
         }
