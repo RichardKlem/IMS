@@ -13,7 +13,7 @@
 
 
 int main(int argc, char *argv[]) {
-    unsigned int x = 23, y = 23, step = 1000, number = 60, initInfectionRate = 10, initImmuneRate = 20,
+    unsigned int x = 23, y = 23, step = 1, number = 60, initInfectionRate = 10, initImmuneRate = 20,
     forwardP = 20, rightP = 20, leftP = 20, backP = 20, stayP = 20;
     string dumpDir = "./";
     bool model2 = false;
