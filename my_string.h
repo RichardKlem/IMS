@@ -1,7 +1,8 @@
 /**
- * @author: Richard Klem
- * @email: xklemr00@stud.fit.vutbr.cz
- * @login: xklemr00
+ * @author1: Richard Klem
+ * @email1: xklemr00@stud.fit.vutbr.cz
+ * @login1: xklemr00
+ * @date: 6.11.2020
  */
 #ifndef PROJ2_MY_STRING_H
 #define PROJ2_MY_STRING_H

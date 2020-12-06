@@ -1,7 +1,12 @@
-//
-// Created by Richa on 02-Dec-20.
-//
-
+/**
+ * @author1: Martin Haderka
+ * @author2: Richard Klem
+ * @email1: xhader00@stud.fit.vutbr.cz
+ * @email2: xklemr00@stud.fit.vutbr.cz
+ * @login1: xhader00
+ * @login2: xklemr00
+ * @date: 6.11.2020
+ */
 #ifndef IMS_CELL_H
 #define IMS_CELL_H
 
@@ -9,11 +14,19 @@
 #include "Person.h"
 #define NUM_OF_NEIGHBOURS 8
 
+/**
+ * @brief Enum struktura cellState přestavující stav buňky.
+ * Může se jednat o zeď, o volnou buňkum kde nikdo není, nebo o obsazenou buňku, na které se nachází konkrétní osoba.
+ */
 enum cellState {
     WALL,
     FREE,
     OCCUPIED
 };
+/**
+ * @brief Třída Cell přestavuje jendu buňku v prostoru - matici. Má stav typu cellState.
+ * Velmi důležitým atributem je její stav a ukazatel na osobu, která buňku obývá.
+ */
 class Cell {
 private:
     cellState state = FREE;
@@ -44,7 +57,7 @@ public:
         Cell::x = newX;
     }
 
-    unsigned int getY() const {
+    unsigned int getY() {
         return y;
     }
 
@@ -52,7 +65,7 @@ public:
         Cell::y = newY;
     }
 
-    Cell(Matrix<Cell> * matrix) : parentMatrix{matrix}{;}
+    explicit Cell(Matrix<Cell> * matrix) : parentMatrix{matrix}{}
 
     cellState getState() {
         return this->state;
@@ -60,6 +73,9 @@ public:
     void setState(cellState newState) {
         this->state = newState;
     }
+    /**
+     * @brief Metoda prozkoumá přilehlé okolí buňky a uloží ukazatele na až 8 sousedů buňky.
+     */
     void initNeighbours(){
         if (x >= 1) {
             if (y >= 1)

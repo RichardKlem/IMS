@@ -1,18 +1,19 @@
-//
-// Created by Richa on 02-Dec-20.
-//
-
+/**
+ * @author1: Martin Haderka
+ * @author2: Richard Klem
+ * @email1: xhader00@stud.fit.vutbr.cz
+ * @email2: xklemr00@stud.fit.vutbr.cz
+ * @login1: xhader00
+ * @login2: xklemr00
+ * @date: 6.11.2020
+ */
 #ifndef IMS_MAIN_H
 #define IMS_MAIN_H
 
-#define YELLOW "\033[0;93m"
+#include "my_string.h"
+
 #define RED "\033[0;91m"
 #define RST "\033[0m"
-
-
-FILE * outFile = stdout;
-FILE * errFile = stdout;
-
 
 enum EXIT_CODES {
     OK = 0,
@@ -20,11 +21,11 @@ enum EXIT_CODES {
     BAD_ARG_VALUE = 11,
     UNKNOWN_PARAMETER = 12};
 
-const char * help_text = "\n***Nápověda k CA simuláru***\n"
+const char * helpText = "\n***Nápověda k CA simuláru***\n"
                          "Překlad:\n"
-                         "  - maken\n\n"
+                         "  - make\n\n"
                          "Spuštění:\n"
-                         "  ./ebola [-i <nazev_rozhrani>| -r <nazev_souboru.pcapng>] [volitelné argumenty]\n"
+                         "  ./covid [-i <nazev_rozhrani>| -r <nazev_souboru.pcapng>] [volitelné argumenty]\n"
                          "  Možné parametry POVINNÉ:\n"
                          "    -i <nazev_rozhrani> (Rozhraní, na kterém se bude poslouchat).\n"
                          "  nebo\n"
@@ -82,7 +83,7 @@ void argParse(int argc, char **argv, unsigned int * number, unsigned int * initI
         switch (c)
         {
             case 'h':
-                fprintf(outFile,"%s", help_text);
+                cout << helpText;
                 exit (OK);
             case 'n':
                 if (p_tmp->status) {

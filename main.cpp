@@ -1,9 +1,14 @@
+/**
+ * @author1: Martin Haderka
+ * @author2: Richard Klem
+ * @email1: xhader00@stud.fit.vutbr.cz
+ * @email2: xklemr00@stud.fit.vutbr.cz
+ * @login1: xhader00
+ * @login2: xklemr00
+ * @date: 6.11.2020
+ */
 #include <iostream>
-#ifdef __linux__
-#include <getopt.h>
-#endif
 #include "CellularAutomaton.h"
-#include "my_string.h"
 #include "main.h"
 
 
@@ -26,7 +31,6 @@ int main(int argc, char *argv[]) {
         argParse(argc, argv, &number, &initInfectionRate, &initImmuneRate, &x, &y, &time, &step, &forwardP, &rightP,
                  &leftP, &backP, &stayP, &dumpDir);
 
-    //cout << dumpDir << endl;
     CellularAutomaton CA(x, y, number, &walls);
     CA.initWalls(&CA.getMatrix());
     CA.initCellPositions();

@@ -1,3 +1,10 @@
+"""
+author: Richard Klem
+email: xklemr00@stud.fit.vutbr.cz
+login: xklemr00
+date: 6.11.2020
+"""
+
 import argparse
 import logging
 import numpy as np
