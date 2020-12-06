@@ -3,7 +3,7 @@
 # @login: xklemr00
 
 .PHONY: all run prog cleanall
-SOURCES= main.cpp main.h my_string.cpp my_string.h CellularAutomaton.cpp CellularAutomaton.h Matrix.h Cell.h Person.h
+SOURCES= main.cpp main.h my_string.cpp my_string.h CellularAutomaton.cpp CellularAutomaton.h Matrix.h Cell.h Person.h utils.h
 
 all: $(SOURCES)
 	g++ -Wextra -Wall -pedantic -o covid main.cpp my_string.cpp CellularAutomaton.cpp

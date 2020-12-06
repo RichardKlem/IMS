@@ -9,6 +9,7 @@
  */
 #ifndef IMS_PERSON_H
 #define IMS_PERSON_H
+#include "utils.h"
 
 /**
  * @brief Enum struktura covidState představuje infekční stav člověka.
@@ -31,8 +32,32 @@ class Person {
 private:
     covidState state = HEALTHY;
     covidState nextState = state;
+    direction lookDir = static_cast<direction>(randIMS(FORWARD, LEFT));
+    direction nextLookDir = lookDir;
     unsigned int x = 0, y = 0;
 public:
+    /**
+     * @brief Funkce nastaví parametr lookingAt na
+     * @param lookingAt
+     * @return
+     */
+    int lookingAtCell(pair<unsigned int, unsigned int > * lookingAt) {
+        pair<unsigned int, unsigned int> tmpPair;
+        if (getLookDir() == FORWARD)
+            tmpPair = {getX() - 1, getY()};
+        else if (getLookDir() == RIGHT)
+            tmpPair = {getX(), getY() + 1};
+        else if (getLookDir() == BACK)
+            tmpPair = {getX() + 1, getY()};
+        else if (getLookDir() == LEFT)
+            tmpPair = {getX(), getY() - 1};
+        else {
+            return 0;
+        }
+        *lookingAt = tmpPair;
+        return 1;
+    }
+
     covidState getState() {
         return state;
     }
@@ -46,6 +71,20 @@ public:
 
     void setNextState(covidState newNextState) {
         Person::nextState = newNextState;
+    }
+    direction getLookDir() {
+        return lookDir;
+    }
+
+    void setLookDir(direction newLookDir) {
+        Person::lookDir = newLookDir;
+    }
+    direction getNextLookDir() {
+        return nextLookDir;
+    }
+
+    void setNextLookDir(direction newNextLookDir) {
+        Person::nextLookDir = newNextLookDir;
     }
 
     unsigned int getX() {

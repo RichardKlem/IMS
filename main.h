@@ -39,12 +39,15 @@ const char * helpText = "\n***Nápověda k CA simuláru***\n"
                          "    -r | --right-p <uint>: Pravděpodobnost pohybu osoby doprava.\n"
                          "    -l | --left-p <uint>: Pravděpodobnost pohybu osoby doleva.\n"
                          "    -z | --stay-p <uint>: Pravděpodobnost setrvání osoby na místě.\n"
-                         "    -z | --dump_dir <uint>: Název složky, kam se generují soubory s daty z matice prostoru\n"
-                         "                           a soubor s celkovým počtem cyklů.\n"
-
+                         "    -d | --dump_dir <uint>: Název složky, kam se generují soubory s daty z matice\n"
+                         "                            prostoru a soubor s celkovým počtem cyklů.\n"
+                         "    -2 | --model2 : Pokud je parametr zadán, použije se model 2. Pokud zadán není, pak\n"
+                         "                    se použije model číslo jedna. Více o modelech viz dokumentace.\n"
 
                          "  Krátké parametry je možné zadávat ve tvaru \"-n5\" anebo \"-n 5\".\n"
-                         "  Dlouhé parametry je nutné zadávat ve tvaru \"--num=5\".\n\n";
+                         "  Dlouhé parametry je nutné zadávat ve tvaru \"--num=5\".\n\n"
+                         "Program obsahuje základní nastavení na experiment číslo 2 dle článku, model 1.\n"
+                        "\n***Konec nápovědy***\n";
 
 #if defined(__APPLE__) || defined(__linux__)
 #include <getopt.h>
@@ -66,10 +69,11 @@ static struct option long_options[] =
                 {"left-p",    optional_argument,  nullptr, 'l'},
                 {"stay-p",    optional_argument,  nullptr, 'z'},
                 {"dump_dir",    optional_argument,  nullptr, 'd'},
+                {"model2",    optional_argument,  nullptr, '2'},
                 {nullptr, 0, nullptr, 0}
         };
 // Definice krátkých přepínačů.
-char *short_options = (char*)"hn:i:m:x:y:s:f:r:b:l:z:d:";
+char *short_options = (char*)"hn:i:m:x:y:s:f:r:b:l:z:d:2";
 
 /**
   * @brief Funkce zpracuje argumenty a nastaví podle nich proměnné.
@@ -80,7 +84,7 @@ char *short_options = (char*)"hn:i:m:x:y:s:f:r:b:l:z:d:";
 void argParse(int argc, char **argv, unsigned int * number, unsigned int * initInfectionRate,
               unsigned int * initImmuneRate, unsigned int * x, unsigned int * y, unsigned int * step,
               unsigned int * forwardP, unsigned int * rightP, unsigned int * leftP, unsigned int * backP,
-              unsigned int * stayP, string * dumpDir) {
+              unsigned int * stayP, string * dumpDir, bool * model2) {
     int c, option_index;
     while ((c = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1)
     {
@@ -194,6 +198,9 @@ void argParse(int argc, char **argv, unsigned int * number, unsigned int * initI
             case 'd':
                 tmpString << optarg;
                 tmpString >> *dumpDir;
+                break;
+            case '2':
+                *model2 = true;
                 break;
             default:
                 exit(UNKNOWN_PARAMETER);

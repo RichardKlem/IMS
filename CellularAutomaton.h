@@ -13,11 +13,9 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
-#include <ctime>
+//#include <ctime>
 #include <string>
 #include <cmath>
-#include <random>
-#include <chrono>
 #include "Matrix.h"
 #include "Cell.h"
 #include "Person.h"
@@ -32,16 +30,6 @@ inline char separator()
 #endif
 }
 
-/**
- * @brief Enum struktura personMove představuje směry, kam se může člověk vydat v dalším kroku.
- */
-enum personMove {
-    FORWARD,
-    RIGHT,
-    BACK,
-    LEFT,
-    STAY
-};
 
 class CellularAutomaton {
 private:
@@ -169,8 +157,8 @@ public:
         for (auto & person: persons) {
             bool didNotFoundPosition = true;
             do {
-                auto newPersonX = rand(0, getX() - 1);
-                auto newPersonY = rand(0, getY() - 1);
+                auto newPersonX = randIMS(0, getX() - 1);
+                auto newPersonY = randIMS(0, getY() - 1);
                 if ((*matrix)[newPersonX][newPersonY].getState() == FREE) {
                     (*matrix)[newPersonX][newPersonY].setState(OCCUPIED);
                     (*matrix)[newPersonX][newPersonY].setPerson(&person);
@@ -213,7 +201,8 @@ public:
                    const unsigned int rightP,
                    const unsigned int leftP,
                    const unsigned int backP,
-                   const unsigned int stayP) {
+                   const unsigned int stayP,
+                   bool model2) {
         bool allInfectedOrImmune = true;
         for (auto & person: persons) {
             for (unsigned int i = 0; i < NUM_OF_NEIGHBOURS; ++i) {
@@ -221,14 +210,27 @@ public:
                 if (
                         neighbour != nullptr &&
                         neighbour->getPerson() != nullptr &&
-                        neighbour->getPerson()->getState() == INFECTED &&
-                        person.getState() != IMMUNE
-                        )
-                    person.setNextState(INFECTED);
+                        person.getState() == HEALTHY
+                        ) {
+                    auto isAt = pair<unsigned int, unsigned int>{person.getX(), person.getY()};
+                    pair<unsigned int, unsigned int> looingAt;
+                    int isOk = neighbour->getPerson()->lookingAtCell(&looingAt);
+                    if (neighbour->getPerson()->getState() == INFECTED) {
+                        // Model 1 uvažuje pouze možnost nákazy napřímo. Dva lidé se dívají přímo na sebe.
+                        if (isOk && looingAt == isAt)
+                            person.setNextState(INFECTED);
+                        // Model 2 přidává možnost nákazy z okolí
+                        else if (isOk and model2){
+                            auto gotInfection = randIMS(0,1000);
+                            if (gotInfection < 100)
+                                person.setNextState(INFECTED);
+                        }
+                    }
+                }
             }
             // Vygeneruje se směr, kam člověk půjde.
-            auto nextMoveKoef = rand(0, 100);
-            personMove nextMove;
+            auto nextMoveKoef = randIMS(0, 100);
+            direction nextMove;
             if ((nextMoveKoef > 0) && (nextMoveKoef < forwardP))
                 nextMove = FORWARD;
             else if ((nextMoveKoef > forwardP) && (nextMoveKoef < forwardP + rightP))
@@ -294,8 +296,9 @@ public:
                 default:
                     (*newMatrix)[person.getX()][person.getY()].setPerson(&person);
                     (*newMatrix)[person.getX()][person.getY()].setState(OCCUPIED);
-
             }
+            if (nextMove != STAY)
+                person.setLookDir(nextMove);
             // Každá osoba, která je ještě zdravá, dá o sobě vědět.
             if (person.getState() == HEALTHY)
                 allInfectedOrImmune = false;
@@ -308,19 +311,6 @@ public:
         return allInfectedOrImmune;
     }
 
-    /**
-     * @brief Funkce vrací pseudo-náhodné číslo ze zadaného intervalu podle algoritmu
-     * @param a leva mez intervalu
-     * @param b prava mez intervalu
-     * @return pseudo-nahodne cislo ze zadaneho intervalu
-     */
-    static unsigned long rand(unsigned long a, unsigned long b) {
-        typedef std::mt19937 rng_type;
-        std::uniform_int_distribution<rng_type::result_type> udist(a, b);
-        rng_type rng(chrono::steady_clock::now().time_since_epoch().count());
-        rng_type::result_type random_number = udist(rng);
-        return random_number;
-    }
 
     /**
      * @brief Metoda obstarava samotnou simulaci sireni koronoaviru se zadanymi parametry.
@@ -342,7 +332,8 @@ public:
                   const unsigned int leftP,
                   const unsigned int backP,
                   const unsigned int stayP,
-                  const string *dumpDir) {
+                  const string *dumpDir,
+                  const bool model2) {
         initInfection(infectionRatio, immuneRatio);
         dumpMatrixToFile(0, dumpDir);
         unsigned int tp1 = 1;
@@ -353,7 +344,7 @@ public:
             auto newMatrix = new Matrix<Cell>(getX(), getY());
             initCellPositions();
             initWalls(newMatrix);
-            allInfectedOrImmune |= nextState(&getMatrix(), newMatrix, forwardP, rightP, leftP, backP, stayP);
+            allInfectedOrImmune |= nextState(&getMatrix(), newMatrix, forwardP, rightP, leftP, backP, stayP, model2);
 
             matrix = newMatrix;
             if (t % step == 0) {
