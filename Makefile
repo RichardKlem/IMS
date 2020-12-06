@@ -8,9 +8,8 @@ SOURCES= main.cpp main.h my_string.cpp my_string.h CellularAutomaton.cpp Cellula
 all: $(SOURCES)
 	g++ -Wextra -Wall -pedantic -o covid main.cpp my_string.cpp CellularAutomaton.cpp
 
-
 run:
-	sudo ./covid
+	./covid
 
 cleanall:
 	rm  covid
