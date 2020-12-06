@@ -39,6 +39,8 @@ const char * help_text = "\n***Nápověda k CA simuláru***\n"
 
 #if defined(__APPLE__) || defined(__linux__)
 #include <getopt.h>
+#include <sstream>
+
 // Definice dlouhých přepínačů.
 static struct option long_options[] =
         {
@@ -55,10 +57,11 @@ static struct option long_options[] =
                 {"back-p",    optional_argument,  nullptr, 'b'},
                 {"left-p",    optional_argument,  nullptr, 'l'},
                 {"stay-p",    optional_argument,  nullptr, 'z'},
+                {"dump_dir",    optional_argument,  nullptr, 'd'},
                 {nullptr, 0, nullptr, 0}
         };
 // Definice krátkých přepínačů.
-char *short_options = (char*)"hn:i:m:x:y:t:s:f:r:b:l:z:";
+char *short_options = (char*)"hn:i:m:x:y:t:s:f:r:b:l:z:d:";
 
 /**
  * @brief Funkce zpracuje argumenty a nastaví podle nich proměnné.
@@ -69,12 +72,13 @@ char *short_options = (char*)"hn:i:m:x:y:t:s:f:r:b:l:z:";
 void argParse(int argc, char **argv, unsigned int * number, unsigned int * initInfectionRate,
               unsigned int * initImmuneRate, unsigned int * x, unsigned int * y, unsigned int * time,
               unsigned int * step, unsigned int * forwardP, unsigned int * rightP, unsigned int * leftP,
-              unsigned int * backP, unsigned int * stayP) {
+              unsigned int * backP, unsigned int * stayP, string * dumpDir) {
     int c, option_index;
     while ((c = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1)
     {
         str2int_struct_t tmp = str2int(optarg);
         str2int_struct_t *p_tmp = &tmp;
+        stringstream tmpString;
         switch (c)
         {
             case 'h':
@@ -187,6 +191,10 @@ void argParse(int argc, char **argv, unsigned int * number, unsigned int * initI
                     cerr << endl << RED <<"   Nesprávná hodnota pravdědopodobnosti setrvání na místě. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
                     exit(BAD_ARG_VALUE);
                 }
+                break;
+            case 'd':
+                tmpString << optarg;
+                tmpString >> *dumpDir;
                 break;
             default:
                 exit(UNKNOWN_PARAMETER);
