@@ -69,7 +69,7 @@ static struct option long_options[] =
                 {nullptr, 0, nullptr, 0}
         };
 // Definice krátkých přepínačů.
-char *short_options = (char*)"hn:i:m:x:y:t:s:f:r:b:l:z:d:";
+char *short_options = (char*)"hn:i:m:x:y:s:f:r:b:l:z:d:";
 
 /**
  * @brief Funkce zpracuje argumenty a nastaví podle nich proměnné.
@@ -134,15 +134,6 @@ void argParse(int argc, char **argv, unsigned int * number, unsigned int * initI
                 }
                 else {
                     cerr << endl << RED <<"   Nesprávná hodnota počtu sloupců. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
-                    exit(BAD_ARG_VALUE);
-                }
-                break;
-            case 't':
-                if (p_tmp->status) {
-                    *time = p_tmp->num;
-                }
-                else {
-                    cerr << endl << RED <<"   Nesprávná hodnota času. Hodnota musí být ostře větší než 0." << RST<< endl << endl;
                     exit(BAD_ARG_VALUE);
                 }
                 break;
