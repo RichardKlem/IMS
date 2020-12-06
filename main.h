@@ -25,15 +25,23 @@ const char * helpText = "\n***Nápověda k CA simuláru***\n"
                          "Překlad:\n"
                          "  - make\n\n"
                          "Spuštění:\n"
-                         "  ./covid [-i <nazev_rozhrani>| -r <nazev_souboru.pcapng>] [volitelné argumenty]\n"
-                         "  Možné parametry POVINNÉ:\n"
-                         "    -i <nazev_rozhrani> (Rozhraní, na kterém se bude poslouchat).\n"
-                         "  nebo\n"
-                         "    -r <nazev_souboru> (Soubor se zachycenými daty).\n"
-                         "            Nebude-li ani jeden z těchto parametrů uveden, "
-                         "            vypíše zkrácená nápověda se seznam aktivních rozhraní)\n"
+                         "  ./covid [volitelné argumenty]\n"
                          "  Možné parametry VOLITELNÉ:\n"
-                         "    -n | --num int: Počáteční počet nakažených.\n"
+                         "    -h | --help : Zobrazí tuto nápovědu.\n"
+                         "    -n | --number <uint>: Celkový počet lidí.\n"
+                         "    -i | --infected <uint>: Počáteční počet nakažených jedinců.\n"
+                         "    -m | --immune <uint>: Počáteční počet imunních jedinců.\n"
+                         "    -x | --row <uint>: První dimenze/počet řádků prostoru.\n"
+                         "    -y | --col <uint>: Druhá dimenze/počet sloupců prostoru.\n"
+                         "    -s | --time-step <uint>: Krok, se kterým se vypisují data za matice prostoru.\n"
+                         "    -f | --forward-p <uint>: Pravděpodobnost pohybu osoby dopředu.\n"
+                         "    -b | --back-p <uint>: Pravděpodobnost pohybu osoby dozadu.\n"
+                         "    -r | --right-p <uint>: Pravděpodobnost pohybu osoby doprava.\n"
+                         "    -l | --left-p <uint>: Pravděpodobnost pohybu osoby doleva.\n"
+                         "    -z | --stay-p <uint>: Pravděpodobnost setrvání osoby na místě.\n"
+                         "    -z | --dump_dir <uint>: Název složky, kam se generují soubory s daty z matice prostoru\n"
+                         "                           a soubor s celkovým počtem cyklů.\n"
+
 
                          "  Krátké parametry je možné zadávat ve tvaru \"-n5\" anebo \"-n 5\".\n"
                          "  Dlouhé parametry je nutné zadávat ve tvaru \"--num=5\".\n\n";
@@ -51,7 +59,6 @@ static struct option long_options[] =
                 {"immune",    optional_argument,  nullptr, 'm'},
                 {"row",    optional_argument,  nullptr, 'x'},
                 {"col",    optional_argument,  nullptr, 'y'},
-                {"time",    optional_argument,  nullptr, 't'},
                 {"time-step",    optional_argument,  nullptr, 's'},
                 {"forward-p",    optional_argument,  nullptr, 'f'},
                 {"right-p",    optional_argument,  nullptr, 'r'},
