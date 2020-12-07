@@ -30,7 +30,7 @@ RUN_CMD = "./" + BIN_NAME + " {0}"
 
 def main():
     parser = argparse.ArgumentParser(description='Experiments')
-    parser.add_argument("-p", "--parameters", action="store", default=os.path.join(os.getcwd(), "parameters.txt"),
+    parser.add_argument("-p", "--parameters", action="store", default=os.path.join(os.getcwd(), "experiments.txt"),
                         help="Select a path to a file with parameters.")
     parser.add_argument("--work-dir", action="store", default=os.path.join(os.getcwd(), "build"),
                         help="Path to a build directory.")
