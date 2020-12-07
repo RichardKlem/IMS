@@ -116,7 +116,10 @@ public:
         x{x},
         y{y},
         walls{*walls}
-        {;    };
+        {};
+    ~CellularAutomaton(){
+        delete matrix;
+    }
     /**
      * @brief Uloží data do souboru s názvem podle modelového času.
      * @param time Hodnota modelového času.
@@ -231,7 +234,7 @@ public:
             // Vygeneruje se směr, kam člověk půjde.
             auto nextMoveKoef = randIMS(0, 100);
             direction nextMove;
-            if ((nextMoveKoef >= 0) && (nextMoveKoef < forwardP))
+            if (nextMoveKoef < forwardP)
                 nextMove = FORWARD;
             else if ((nextMoveKoef >= forwardP) && (nextMoveKoef < forwardP + rightP))
                 nextMove = RIGHT;
@@ -340,13 +343,14 @@ public:
         // Cyklí se přes modelový čas!
         static bool allInfectedOrImmune = false;
         for (unsigned int t = 0; t < ++tp1; ++t) {
-            static bool allInfectedOrImmune = false;
             auto newMatrix = new Matrix<Cell>(getX(), getY());
             initCellPositions();
             initWalls(newMatrix);
             allInfectedOrImmune |= nextState(&getMatrix(), newMatrix, forwardP, rightP, leftP, backP, stayP, model2);
 
+            auto matrixToDelete = matrix;
             matrix = newMatrix;
+            delete matrixToDelete;
             if (t % step == 0) {
                 dumpMatrixToFile(t+1, dumpDir);
             }
