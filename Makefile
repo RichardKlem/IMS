@@ -2,14 +2,18 @@
 # @email: xklemr00@stud.fit.vutbr.cz
 # @login: xklemr00
 
-.PHONY: all run cleanall all_exp visualize install_req_all_exp install_req_vis
+CXXFLAGS = -Wall -Wextra -pedantic -std=c++17
+CC = g++
 SOURCES= main.cpp main.h my_string.cpp my_string.h CellularAutomaton.h Matrix.h Cell.h Person.h utils.h
+OUTDIR="outputs"
+.PHONY: all run cleanall all_exp visualize install_req_all_exp install_req_vis
 
 all: $(SOURCES)
-	g++ -Wextra -Wall -pedantic -o covid main.cpp my_string.cpp
+	$(CC) $(CXXFLAGS) -o covid main.cpp my_string.cpp
 
 run:
-	./covid
+	mkdir -p $(OUTDIR)
+	./covid -d $(OUTDIR)
 
 cleanall:
 	rm  covid

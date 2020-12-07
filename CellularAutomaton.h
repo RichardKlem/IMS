@@ -204,7 +204,7 @@ public:
                    const unsigned int rightP,
                    const unsigned int leftP,
                    const unsigned int backP,
-                   const unsigned int stayP,
+                   [[maybe_unused]] const unsigned int stayP,
                    bool model2) {
         bool allInfectedOrImmune = true;
         for (auto & person: persons) {
@@ -260,6 +260,7 @@ public:
                         person.setX(person.getX() - 1);
                         break;
                     }
+                    [[fallthrough]];
                 case RIGHT:
                     if (
                             (person.getY() < (*oldMatrix).dim.second - 1) &&
@@ -272,6 +273,7 @@ public:
                         person.setY(person.getY() + 1);
                         break;
                     }
+                    [[fallthrough]];
                 case BACK:
                     if (
                             (person.getX() < (*oldMatrix).dim.first - 1) &&
@@ -284,18 +286,20 @@ public:
                         person.setX(person.getX() + 1);
                         break;
                     }
+                    [[fallthrough]];
                 case LEFT:
-                        if (
-                                (person.getY() != 0) &&
-                                (*oldMatrix)[person.getX()][person.getY() - 1].getState() == FREE &&
-                                (*newMatrix)[person.getX()][person.getY() - 1].getState() == FREE
-                            )
-                        {
-                            (*newMatrix)[person.getX()][person.getY() - 1].setPerson(&person);
-                            (*newMatrix)[person.getX()][person.getY() - 1].setState(OCCUPIED);
-                            person.setY(person.getY() - 1);
-                            break;
-                        }
+                    if (
+                            (person.getY() != 0) &&
+                            (*oldMatrix)[person.getX()][person.getY() - 1].getState() == FREE &&
+                            (*newMatrix)[person.getX()][person.getY() - 1].getState() == FREE
+                        )
+                    {
+                        (*newMatrix)[person.getX()][person.getY() - 1].setPerson(&person);
+                        (*newMatrix)[person.getX()][person.getY() - 1].setState(OCCUPIED);
+                        person.setY(person.getY() - 1);
+                        break;
+                    }
+                    [[fallthrough]];
                 default:
                     (*newMatrix)[person.getX()][person.getY()].setPerson(&person);
                     (*newMatrix)[person.getX()][person.getY()].setState(OCCUPIED);
