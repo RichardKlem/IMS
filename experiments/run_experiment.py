@@ -6,7 +6,6 @@ date: 6.11.2020
 """
 
 import argparse
-import logging
 import numpy as np
 import os
 import pandas as pd
@@ -36,7 +35,6 @@ def main():
                         help="Path to a build directory.")
     parser.add_argument("--result-dir", action="store", default=os.path.join(os.getcwd(), "results"),
                         help="Path to a folder in which the results will be stored.")
-    logging.basicConfig(level=logging.INFO)
 
     args = parser.parse_args(sys.argv[1:])
 
@@ -60,7 +58,7 @@ def main():
                 if arguments is not None:
                     os.chmod(BIN_NAME, os.stat(BIN_NAME).st_mode | stat.S_IEXEC)
                     average_cycles = []
-                    for i in range(100):
+                    for i in range(10):
                         os.system((RUN_CMD.format(arguments.group(2))) + f" -d experiment{arguments.group(1)}")
                         with open(os.path.join(f"experiment{arguments.group(1)}", "results.txt")) as result_file:
                             cycles = int(result_file.readline())

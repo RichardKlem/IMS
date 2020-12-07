@@ -17,6 +17,7 @@ http://www.romjist.ro/full-texts/paper651.pdf?fbclid=IwAR36Y5RT4PkjhvZEQpI39UGma
 
 ## Překlad
 - `make`
+Pro bezproblémový překlad použijte překladač podporující standard C++ 17.
 ## Spuštění
 - `make run`
 nebo
@@ -46,3 +47,19 @@ prostoru a soubor s celkovým počtem cyklů.<br/>
 Krátké parametry je možné zadávat ve tvaru `-n5` anebo `-n 5`.<br/>
 Dlouhé parametry je nutné zadávat ve tvaru `--num=5`.<br/>
 Program obsahuje základní nastavení na experiment číslo 2 dle článku, model 1.<br/>
+
+## Doplňkové skripty
+Oba doplňkové skripty vyžadují **Python3**. Závislosti si pak obstarávají sami.
+### Automatizované experimenty
+Skript spustí a zpracuje výslekdy ze 10 simulací každého z 20 předpřipravených experimentů.<br/>
+Počet opakování lze upravit přímo v skriptu na řádku 63.<br/>
+Pokud si nepřejete generovat všechny data ze simulátoru,<br/> 
+pak zvolte vysokoou hodnotu kroku výpisu, například 1000 `--step=1000`.
+#### Spuštění
+- `make all_exp`
+Skript vygeneruje HTML tabulku. Soubor se jmenuje `agregated_results.html`.
+### Vizualizace průběhu simulace
+Spustí se vizualizace experimentu definovaného jako základní v souboru `main.cpp`.<br/>
+V základním nastavení se jedná o experiment 2 z článku. Více viz dokumentace.
+#### Spuštění
+- `make visualize`
